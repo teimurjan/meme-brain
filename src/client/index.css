@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+
+@theme {
+  --animate-progress-bar: progress-bar 4s ease-in-out forwards;
+  @keyframes progress-bar {
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+}
