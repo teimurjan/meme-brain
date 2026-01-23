@@ -32,10 +32,7 @@ export function ResultScreen({ optionResult, strike, humorProfile, shareText, on
         </div>
       )}
 
-      <div className="border-2 border-black bg-white p-4 shadow-[2px_2px_0_0]">
-        <p className="text-sm text-gray-600 text-center mb-2">Your Humor Profile</p>
-        <RadarChart profile={humorProfile} size={180} />
-      </div>
+      <RadarChart profile={humorProfile} size={250} />
 
       <ShareableCard text={shareText} />
 
