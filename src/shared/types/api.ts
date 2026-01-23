@@ -1,4 +1,4 @@
-import type { Challenge, Archetype, OptionId } from './challenge';
+import type { Challenge, OptionId, OptionResult, HumorProfile } from './challenge';
 import type { UserState } from './user';
 
 export type ChallengeResponse = {
@@ -15,12 +15,10 @@ export type PlayRequest = {
 
 export type PlayResponse = {
   type: 'play';
-  archetype: Archetype;
-  archetypeId: string;
-  stats: {
-    total: number;
-    percentage: number;
-  };
+  optionResult: OptionResult;
+  optionId: OptionId;
+  strike: number;
+  humorProfile: HumorProfile;
   userState: UserState;
   shareText: string;
 };

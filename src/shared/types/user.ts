@@ -1,6 +1,9 @@
+import type { HumorProfile, OptionId } from './challenge';
+
 export type HistoryEntry = {
   postId: string;
-  archetypeId: string;
+  optionId: OptionId;
+  humorProfile: HumorProfile;
   playedAt: string;
 };
 

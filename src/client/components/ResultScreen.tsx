@@ -1,37 +1,41 @@
-import type { Archetype, UserState } from '../../shared/types';
+import type { OptionResult, HumorProfile } from '../../shared/types';
 import { useNextMemeCountdown } from '../hooks/useNextMemeCountdown';
 import { ShareableCard } from './ShareableCard';
-import { StreakDisplay } from './StreakDisplay';
+import { RadarChart } from './RadarChart';
 import { Button } from './ui/Button';
 
 type Props = {
-  archetype: Archetype;
-  stats: { total: number; percentage: number };
-  userState: UserState;
+  optionResult: OptionResult;
+  strike: number;
+  humorProfile: HumorProfile;
   shareText: string;
   onReset?: (clearChallenge?: boolean) => void;
 };
 
-export function ResultScreen({ archetype, stats, userState, shareText, onReset }: Props) {
+export function ResultScreen({ optionResult, strike, humorProfile, shareText, onReset }: Props) {
   const isProduction = import.meta.env.VITE_STAGE === 'production';
   const countdown = useNextMemeCountdown();
-
+  console.log('humorProfile', humorProfile);
   return (
     <div className="flex flex-col gap-4 max-w-lg mx-auto">
       <div className="border-2 border-black bg-yellow-100 p-4 shadow-[4px_4px_0_0] text-center">
         <p className="text-sm text-gray-600 mb-1">You are</p>
-        <h2 className="text-2xl font-bold text-black">{archetype.label}</h2>
-        <p className="mt-2 text-sm italic text-gray-600">"{archetype.blurb}"</p>
+        <h2 className="text-2xl font-bold text-black">{optionResult.label}</h2>
+        <p className="mt-2 text-sm italic text-gray-600">"{optionResult.roast}"</p>
       </div>
 
-      {stats.total > 0 && (
-        <div className="border-2 border-black bg-white p-3 shadow-[2px_2px_0_0] text-center">
-          <span className="text-2xl font-bold text-black">{stats.percentage}%</span>
-          <span className="text-sm text-gray-600 ml-2">of players picked this</span>
+      {strike > 0 && (
+        <div className="border-2 border-black bg-orange-100 p-3 shadow-[2px_2px_0_0] text-center">
+          <span className="text-2xl font-bold text-black">{strike}</span>
+          <span className="text-sm text-gray-600 ml-2">day streak</span>
+          {strike >= 3 && <span className="ml-1">🔥</span>}
         </div>
       )}
 
-      <StreakDisplay userState={userState} />
+      <div className="border-2 border-black bg-white p-4 shadow-[2px_2px_0_0]">
+        <p className="text-sm text-gray-600 text-center mb-2">Your Humor Profile</p>
+        <RadarChart profile={humorProfile} size={180} />
+      </div>
 
       <ShareableCard text={shareText} />
 

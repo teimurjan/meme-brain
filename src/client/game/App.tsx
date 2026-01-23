@@ -6,17 +6,8 @@ import { ErrorScreen } from '../components/ErrorScreen';
 import { LoadingScreen } from '../components/LoadingScreen';
 
 export const App = () => {
-  const {
-    status,
-    challenge,
-    userState,
-    selectedOptionId,
-    result,
-    error,
-    selectOption,
-    retry,
-    reset,
-  } = useGame();
+  const { status, challenge, selectedOptionId, result, error, selectOption, retry, reset } =
+    useGame();
 
   if (status === 'loading') {
     return (
@@ -34,13 +25,13 @@ export const App = () => {
     );
   }
 
-  if (status === 'result' && result && userState) {
+  if (status === 'result' && result) {
     return (
       <Layout>
         <ResultScreen
-          archetype={result.archetype}
-          stats={result.stats}
-          userState={userState}
+          optionResult={result.optionResult}
+          strike={result.strike}
+          humorProfile={result.humorProfile}
           shareText={result.shareText}
           onReset={(clearChallenge) => void reset(clearChallenge)}
         />

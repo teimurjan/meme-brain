@@ -1,8 +1,10 @@
 import { redis } from '@devvit/web/server';
-import type { UserState, HistoryEntry } from '../../shared/types';
+import type { UserState, HumorProfile, OptionId } from '../../shared/types';
 import { config } from '../config';
 
-const DEFAULT_USER_STATE: UserState = {
+export { calculateStrike, calculateAccumulatedProfile } from '../../shared/utils/humor-profile';
+
+export const DEFAULT_USER_STATE: UserState = {
   totalPlays: 0,
   history: [],
 };
@@ -22,17 +24,19 @@ export async function setUserState(userId: string, state: UserState): Promise<vo
 export async function recordPlay(
   userId: string,
   postId: string,
-  archetypeId: string
+  optionId: OptionId,
+  humorProfile: HumorProfile
 ): Promise<UserState> {
   const state = await getUserState(userId);
 
-  if (state.lastPlayedPost === postId) {
+  if (state.history.some((h) => h.postId === postId)) {
     return state;
   }
 
-  const newEntry: HistoryEntry = {
+  const newEntry = {
     postId,
-    archetypeId,
+    optionId,
+    humorProfile,
     playedAt: new Date().toISOString(),
   };
   const newHistory = [newEntry, ...state.history].slice(0, config.content.historyLimit);
@@ -52,10 +56,10 @@ export async function hasPlayedPost(userId: string, postId: string): Promise<boo
   return state.history.some((h) => h.postId === postId);
 }
 
-export async function getSelectedOption(userId: string, postId: string): Promise<string | null> {
+export async function getSelectedOption(userId: string, postId: string): Promise<OptionId | null> {
   const state = await getUserState(userId);
   const entry = state.history.find((h) => h.postId === postId);
-  return entry?.archetypeId ?? null;
+  return entry?.optionId ?? null;
 }
 
 export async function resetPostPlay(userId: string, postId: string): Promise<UserState> {

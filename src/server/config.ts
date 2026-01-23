@@ -28,9 +28,9 @@ export const config = {
   },
 
   content: {
-    maxSituationLength: 140,
     maxOptionLength: 90,
-    maxArchetypeLabelLength: 26,
+    maxLabelLength: 26,
+    maxRoastLength: 140,
     historyLimit: 7,
   },
 

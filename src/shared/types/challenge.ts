@@ -1,20 +1,20 @@
-export type GameType = 'wrongMeaning' | 'wrongTone' | 'wrongFraming';
 export type OptionId = 'A' | 'B' | 'C';
 
-export const GAME_TYPE_CONFIG = {
-  wrongMeaning: {
-    label: 'Wrong Meaning',
-    prompt: 'Pick the most confidently incorrect interpretation.',
-  },
-  wrongTone: {
-    label: 'Wrong Tone',
-    prompt: 'Pick the response with the most wrong vibe.',
-  },
-  wrongFraming: {
-    label: 'Wrong Framing',
-    prompt: 'Pick the most Reddit-brained explanation.',
-  },
-} as const;
+export const HUMOR_TYPES = ['absurdist', 'sarcastic', 'wholesome', 'unhinged', 'deadpan'] as const;
+export type HumorType = (typeof HUMOR_TYPES)[number];
+export type HumorProfile = Record<HumorType, number>;
+
+export type OptionResult = {
+  label: string;
+  roast: string;
+};
+
+export type ChallengeOption = {
+  id: OptionId;
+  text: string;
+  humorProfile: HumorProfile;
+  result: OptionResult;
+};
 
 export type MemeSource = {
   postId: string;
@@ -23,19 +23,6 @@ export type MemeSource = {
   imageUrl: string;
   permalink: string;
   author?: string;
-};
-
-export type ChallengeOption = {
-  id: OptionId;
-  text: string;
-  archetypeId: string;
-};
-
-export type Archetype = {
-  label: string;
-  blurb: string;
-  shareText: string;
-  tags?: string[];
 };
 
 export type ModerationInfo = {
@@ -55,17 +42,22 @@ export type Challenge = {
   seed: string;
   generatedAt: string;
   model: ModelInfo;
-  gameType: GameType;
   meme: MemeSource;
-  situation: string;
   options: [ChallengeOption, ChallengeOption, ChallengeOption];
-  archetypes: Record<string, Archetype>;
   moderation: ModerationInfo;
 };
 
 export type LLMGeneratedContent = {
-  situation: string;
   options: [ChallengeOption, ChallengeOption, ChallengeOption];
-  archetypes: Record<string, Archetype>;
   moderationFlags: string[];
 };
+
+export function createEmptyHumorProfile(): HumorProfile {
+  return {
+    absurdist: 0,
+    sarcastic: 0,
+    wholesome: 0,
+    unhinged: 0,
+    deadpan: 0,
+  };
+}

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import type { ChallengeResponse, ErrorResponse } from '../../shared/types';
 import { reddit, context } from '@devvit/web/server';
-import { getUserState, getSelectedOption } from '../storage/user-store';
+import { getUserState, getSelectedOption, hasPlayedPost } from '../storage/user-store';
 import { getOrGenerateChallenge } from '../core/challenge-generator';
 
 export async function handleGetChallenge(
@@ -25,16 +25,8 @@ export async function handleGetChallenge(
     }
 
     const userState = await getUserState(userId);
-    const hasPlayed = userState.lastPlayedPost === postId;
-
-    let selectedOptionId: ChallengeResponse['selectedOptionId'];
-    if (hasPlayed) {
-      const archetypeId = await getSelectedOption(userId, postId);
-      if (archetypeId) {
-        const option = challenge.options.find((o) => o.archetypeId === archetypeId);
-        selectedOptionId = option?.id;
-      }
-    }
+    const hasPlayed = await hasPlayedPost(userId, postId);
+    const selectedOptionId = hasPlayed ? await getSelectedOption(userId, postId) : undefined;
 
     const response: ChallengeResponse = {
       type: 'challenge',

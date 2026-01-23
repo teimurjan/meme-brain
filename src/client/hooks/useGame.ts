@@ -2,12 +2,15 @@ import { useCallback, useEffect, useState } from 'react';
 import type {
   Challenge,
   UserState,
-  Archetype,
+  OptionResult,
   OptionId,
+  HumorProfile,
   ChallengeResponse,
   PlayResponse,
   ErrorResponse,
 } from '../../shared/types';
+import { calculateStrike, calculateAccumulatedProfile } from '../../shared/utils/humor-profile';
+import { formatShareText } from '../../shared/utils/share-text';
 
 type GameStatus = 'loading' | 'ready' | 'playing' | 'result' | 'error';
 
@@ -18,9 +21,10 @@ type GameState = {
   hasPlayed: boolean;
   selectedOptionId: OptionId | null;
   result: {
-    archetype: Archetype;
-    archetypeId: string;
-    stats: { total: number; percentage: number };
+    optionResult: OptionResult;
+    optionId: OptionId;
+    strike: number;
+    humorProfile: HumorProfile;
     shareText: string;
   } | null;
   error: string | null;
@@ -53,7 +57,8 @@ export function useGame() {
 
       if (hasPlayed && selectedOptionId) {
         const option = challenge.options.find((o) => o.id === selectedOptionId);
-        const archetype = option ? challenge.archetypes[option.archetypeId] : null;
+        const strike = calculateStrike(userState.history);
+        const humorProfile = calculateAccumulatedProfile(userState.history);
 
         setState({
           status: 'result',
@@ -61,12 +66,18 @@ export function useGame() {
           userState,
           hasPlayed: true,
           selectedOptionId,
-          result: archetype
+          result: option
             ? {
-                archetype,
-                archetypeId: option!.archetypeId,
-                stats: { total: 0, percentage: 0 },
-                shareText: formatShareText(archetype.label, archetype.shareText),
+                optionResult: option.result,
+                optionId: selectedOptionId,
+                strike,
+                humorProfile,
+                shareText: formatShareText(
+                  option.result.label,
+                  option.result.roast,
+                  humorProfile,
+                  strike
+                ),
               }
             : null,
           error: null,
@@ -116,9 +127,10 @@ export function useGame() {
           hasPlayed: true,
           userState: data.userState,
           result: {
-            archetype: data.archetype,
-            archetypeId: data.archetypeId,
-            stats: data.stats,
+            optionResult: data.optionResult,
+            optionId: data.optionId,
+            strike: data.strike,
+            humorProfile: data.humorProfile,
             shareText: data.shareText,
           },
         }));
@@ -172,8 +184,4 @@ export function useGame() {
     retry,
     reset,
   } as const;
-}
-
-function formatShareText(label: string, blurb: string): string {
-  return `I'm **${label}** — *"${blurb}"*`;
 }

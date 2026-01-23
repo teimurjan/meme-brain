@@ -1,9 +1,8 @@
-import type { ChallengeOption, OptionId, GameType } from '../../shared/types';
+import type { ChallengeOption, OptionId } from '../../shared/types';
 import { Button } from './ui/Button';
 
 type Props = {
   option: ChallengeOption;
-  gameType: GameType;
   onSelect: (id: OptionId) => void;
   disabled: boolean;
   selected: boolean;

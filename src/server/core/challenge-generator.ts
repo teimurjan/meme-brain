@@ -1,4 +1,4 @@
-import type { Challenge, MemeSource, LLMGeneratedContent, GameType } from '../../shared/types';
+import type { Challenge, MemeSource, LLMGeneratedContent } from '../../shared/types';
 import { generateSeed } from '../../shared/utils/date';
 import { config } from '../config';
 import {
@@ -11,18 +11,6 @@ import {
 import { getFallbackChallenge } from './fallback-challenges';
 import { fetchMeme } from './meme-fetcher';
 import { generateContent } from './llm-client';
-import { validateLLMOutput } from '../validation/challenge-validator';
-
-const GAME_TYPES: GameType[] = ['wrongMeaning', 'wrongTone', 'wrongFraming'];
-
-function getGameTypeForPost(postId: string): GameType {
-  let hash = 0;
-  for (let i = 0; i < postId.length; i++) {
-    hash = (hash << 5) - hash + postId.charCodeAt(i);
-    hash = hash & hash;
-  }
-  return GAME_TYPES[Math.abs(hash) % GAME_TYPES.length]!;
-}
 
 export async function getOrGenerateChallenge(postId: string): Promise<Challenge | null> {
   console.log(`[challenge] Getting challenge for post ${postId}`);
@@ -59,10 +47,9 @@ export async function getOrGenerateChallenge(postId: string): Promise<Challenge 
 
 async function generateChallenge(postId: string): Promise<Challenge> {
   const seed = generateSeed(`${postId}-${Date.now()}`);
-  const gameType = getGameTypeForPost(postId);
-  console.log(`[challenge] Game type: ${gameType}, seed: ${seed}`);
+  console.log(`[challenge] seed: ${seed}`);
 
-  const fallbackChallenge = getFallbackChallenge(postId, gameType);
+  const fallbackChallenge = getFallbackChallenge(postId);
 
   const memeResult = await fetchMeme(seed);
   if (!memeResult.success) {
@@ -71,26 +58,25 @@ async function generateChallenge(postId: string): Promise<Challenge> {
 
   const meme = memeResult.success ? memeResult.meme : fallbackChallenge.meme;
 
-  const llmContent = await generateWithRetry(postId, meme, gameType);
+  const llmContent = await generateWithRetry(postId, meme);
   if (!llmContent) {
     console.warn('LLM generation failed after retries, using fallback');
     return { ...fallbackChallenge, meme };
   }
 
-  return buildChallenge(postId, seed, gameType, meme, llmContent);
+  return buildChallenge(postId, seed, meme, llmContent);
 }
 
 async function generateWithRetry(
   postId: string,
-  meme: MemeSource,
-  gameType: GameType
+  meme: MemeSource
 ): Promise<LLMGeneratedContent | null> {
   let lastError: string | undefined;
 
   for (let attempt = 1; attempt <= config.llm.maxRetries; attempt++) {
     console.log(`LLM generation attempt ${attempt}/${config.llm.maxRetries}`);
 
-    const result = await generateContent(postId, meme, gameType, lastError);
+    const result = await generateContent(postId, meme, lastError);
 
     if (!result.success) {
       console.warn(`LLM call failed: ${result.error}`);
@@ -98,14 +84,7 @@ async function generateWithRetry(
       continue;
     }
 
-    const validation = validateLLMOutput(result.content);
-    if (!validation.valid) {
-      console.warn(`Validation failed: ${validation.error}`);
-      lastError = validation.error;
-      continue;
-    }
-
-    return validation.content;
+    return result.content;
   }
 
   return null;
@@ -114,7 +93,6 @@ async function generateWithRetry(
 function buildChallenge(
   postId: string,
   seed: string,
-  gameType: GameType,
   meme: MemeSource,
   content: LLMGeneratedContent
 ): Challenge {
@@ -126,11 +104,8 @@ function buildChallenge(
       provider: config.llm.provider,
       name: config.llm.model,
     },
-    gameType,
     meme,
-    situation: content.situation,
     options: content.options,
-    archetypes: content.archetypes,
     moderation: {
       safe: true,
       flags: content.moderationFlags || [],

@@ -2,8 +2,13 @@ import type { Request, Response } from 'express';
 import type { PlayRequest, PlayResponse, ErrorResponse, OptionId } from '../../shared/types';
 import { reddit, context } from '@devvit/web/server';
 import { getChallenge } from '../storage/challenge-store';
-import { recordPlay, hasPlayedPost } from '../storage/user-store';
-import { incrementStat, getArchetypePercentage } from '../storage/stats-store';
+import {
+  recordPlay,
+  hasPlayedPost,
+  calculateStrike,
+  calculateAccumulatedProfile,
+} from '../storage/user-store';
+import { formatShareText } from '../../shared/utils/share-text';
 
 const VALID_OPTION_IDS: OptionId[] = ['A', 'B', 'C'];
 
@@ -50,23 +55,23 @@ export async function handlePlay(
       return;
     }
 
-    const archetype = challenge.archetypes[selectedOption.archetypeId];
-    if (!archetype) {
-      res.status(500).json({ type: 'error', message: 'Archetype not found' });
-      return;
-    }
+    const userState = await recordPlay(userId, postId, optionId, selectedOption.humorProfile);
 
-    const userState = await recordPlay(userId, postId, selectedOption.archetypeId);
-    await incrementStat(postId, selectedOption.archetypeId);
-    const { total, percentage } = await getArchetypePercentage(postId, selectedOption.archetypeId);
-
-    const shareText = formatShareText(archetype.label, archetype.shareText);
+    const strike = calculateStrike(userState.history);
+    const humorProfile = calculateAccumulatedProfile(userState.history);
+    const shareText = formatShareText(
+      selectedOption.result.label,
+      selectedOption.result.roast,
+      humorProfile,
+      strike
+    );
 
     res.json({
       type: 'play',
-      archetype,
-      archetypeId: selectedOption.archetypeId,
-      stats: { total, percentage },
+      optionResult: selectedOption.result,
+      optionId,
+      strike,
+      humorProfile,
       userState,
       shareText,
     });
@@ -77,11 +82,4 @@ export async function handlePlay(
       message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
-}
-
-function formatShareText(label: string, blurb: string): string {
-  return `meme-brain
-I got: ${label}
-"${blurb}"
-#memebrain`;
 }
