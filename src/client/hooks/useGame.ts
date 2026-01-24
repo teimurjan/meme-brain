@@ -8,6 +8,8 @@ import type {
   ChallengeResponse,
   PlayResponse,
   ErrorResponse,
+  ClubState,
+  ClubMember,
 } from '../../shared/types';
 import { calculateStrike, calculateAccumulatedProfile } from '../../shared/utils/humor-profile';
 import { formatShareText } from '../../shared/utils/share-text';
@@ -26,8 +28,12 @@ type GameState = {
     strike: number;
     humorProfile: HumorProfile;
     shareText: string;
+    globalPlayNumber?: number;
+    newClubMember?: ClubMember | null;
   } | null;
   error: string | null;
+  clubState: ClubState | null;
+  showClub: boolean;
 };
 
 const initialState: GameState = {
@@ -38,6 +44,8 @@ const initialState: GameState = {
   selectedOptionId: null,
   result: null,
   error: null,
+  clubState: null,
+  showClub: false,
 };
 
 export function useGame() {
@@ -53,7 +61,7 @@ export function useGame() {
       const data = (await res.json()) as ChallengeResponse | ErrorResponse;
       if (data.type === 'error') throw new Error(data.message);
 
-      const { challenge, userState, hasPlayed, selectedOptionId } = data;
+      const { challenge, userState, hasPlayed, selectedOptionId, clubState } = data;
 
       if (hasPlayed && selectedOptionId) {
         const option = challenge.options.find((o) => o.id === selectedOptionId);
@@ -81,6 +89,8 @@ export function useGame() {
               }
             : null,
           error: null,
+          clubState,
+          showClub: false,
         });
       } else {
         setState({
@@ -91,6 +101,8 @@ export function useGame() {
           selectedOptionId: null,
           result: null,
           error: null,
+          clubState,
+          showClub: false,
         });
       }
     } catch (err) {
@@ -132,7 +144,10 @@ export function useGame() {
             strike: data.strike,
             humorProfile: data.humorProfile,
             shareText: data.shareText,
+            globalPlayNumber: data.globalPlayNumber,
+            newClubMember: data.newClubMember,
           },
+          clubState: data.clubState,
         }));
       } catch (err) {
         console.error('Failed to submit choice:', err);
@@ -174,6 +189,31 @@ export function useGame() {
     [loadChallenge]
   );
 
+  const resetClub = useCallback(async () => {
+    setState((prev) => ({ ...prev, status: 'loading', error: null }));
+
+    try {
+      const res = await fetch('/api/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clearClub: true }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      await loadChallenge();
+    } catch (err) {
+      console.error('Failed to reset club:', err);
+      setState((prev) => ({
+        ...prev,
+        status: 'error',
+        error: err instanceof Error ? err.message : 'Failed to reset club',
+      }));
+    }
+  }, [loadChallenge]);
+
+  const setShowClub = useCallback((show: boolean) => {
+    setState((prev) => ({ ...prev, showClub: show }));
+  }, []);
+
   useEffect(() => {
     void loadChallenge();
   }, [loadChallenge]);
@@ -183,5 +223,7 @@ export function useGame() {
     selectOption,
     retry,
     reset,
+    resetClub,
+    setShowClub,
   } as const;
 }

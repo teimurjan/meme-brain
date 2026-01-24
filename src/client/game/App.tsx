@@ -1,13 +1,26 @@
 import { useGame } from '../hooks/useGame';
 import { GameScreen } from '../components/GameScreen';
 import { ResultScreen } from '../components/ResultScreen';
+import { ClubScreen } from '../components/ClubScreen';
 import { Layout } from '../components/ui/Layout';
 import { ErrorScreen } from '../components/ErrorScreen';
 import { LoadingScreen } from '../components/LoadingScreen';
 
 export const App = () => {
-  const { status, challenge, selectedOptionId, result, error, selectOption, retry, reset } =
-    useGame();
+  const {
+    status,
+    challenge,
+    selectedOptionId,
+    result,
+    error,
+    clubState,
+    showClub,
+    selectOption,
+    retry,
+    reset,
+    resetClub,
+    setShowClub,
+  } = useGame();
 
   if (status === 'loading') {
     return (
@@ -26,6 +39,14 @@ export const App = () => {
   }
 
   if (status === 'result' && result) {
+    if (showClub && clubState) {
+      return (
+        <Layout>
+          <ClubScreen clubState={clubState} onBack={() => setShowClub(false)} />
+        </Layout>
+      );
+    }
+
     return (
       <Layout>
         <ResultScreen
@@ -34,6 +55,8 @@ export const App = () => {
           humorProfile={result.humorProfile}
           shareText={result.shareText}
           onReset={(clearChallenge) => void reset(clearChallenge)}
+          onResetClub={() => void resetClub()}
+          onShowClub={() => setShowClub(true)}
         />
       </Layout>
     );

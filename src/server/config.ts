@@ -57,6 +57,8 @@ export const config = {
       userState: (userId: string) => `user:${userId}:state`,
       userHistory: (userId: string) => `user:${userId}:history`,
       stats: (dateKey: string) => `stats:${dateKey}`,
+      globalPlayCount: () => 'global:playCount',
+      clubMembers: () => 'club:members',
     },
     lockTtlSeconds: 60,
     challengeTtlSeconds: 60 * 60 * 48, // 48 hours

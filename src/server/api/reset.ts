@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { reddit, context } from '@devvit/web/server';
 import { resetPostPlay } from '../storage/user-store';
 import { deleteChallenge } from '../storage/challenge-store';
+import { resetClubState } from '../storage/club-store';
 
 type ResetResponse = {
   type: 'reset';
@@ -11,6 +12,7 @@ type ResetResponse = {
 
 type ResetRequest = {
   clearChallenge?: boolean;
+  clearClub?: boolean;
 };
 
 export async function handleReset(
@@ -27,6 +29,7 @@ export async function handleReset(
     const username = await reddit.getCurrentUsername();
     const userId = username ?? 'anonymous';
     const clearChallenge = req.body?.clearChallenge ?? false;
+    const clearClub = req.body?.clearClub ?? false;
 
     await resetPostPlay(userId, postId);
 
@@ -34,10 +37,18 @@ export async function handleReset(
       await deleteChallenge(postId);
     }
 
+    if (clearClub) {
+      await resetClubState();
+    }
+
+    const parts = ['Play state reset'];
+    if (clearChallenge) parts.push('challenge reset');
+    if (clearClub) parts.push('club reset');
+
     res.json({
       type: 'reset',
       success: true,
-      message: clearChallenge ? 'Play state and challenge reset' : 'Play state reset',
+      message: parts.join(', '),
     });
   } catch (error) {
     console.error('Error in handleReset:', error);

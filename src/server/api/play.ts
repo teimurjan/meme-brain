@@ -8,6 +8,11 @@ import {
   calculateStrike,
   calculateAccumulatedProfile,
 } from '../storage/user-store';
+import {
+  incrementGlobalPlayCount,
+  checkAndClaimLuckySpot,
+  getClubState,
+} from '../storage/club-store';
 import { formatShareText } from '../../shared/utils/share-text';
 
 const VALID_OPTION_IDS: OptionId[] = ['A', 'B', 'C'];
@@ -57,6 +62,10 @@ export async function handlePlay(
 
     const userState = await recordPlay(userId, postId, optionId, selectedOption.humorProfile);
 
+    const globalPlayNumber = await incrementGlobalPlayCount();
+    const newClubMember = await checkAndClaimLuckySpot(globalPlayNumber, userId);
+    const clubState = await getClubState();
+
     const strike = calculateStrike(userState.history);
     const humorProfile = calculateAccumulatedProfile(userState.history);
     const shareText = formatShareText(
@@ -74,6 +83,9 @@ export async function handlePlay(
       humorProfile,
       userState,
       shareText,
+      globalPlayNumber,
+      newClubMember,
+      clubState,
     });
   } catch (error) {
     console.error('Error in handlePlay:', error);
