@@ -9,7 +9,7 @@ import {
   calculateAccumulatedProfile,
 } from '../storage/user-store';
 import {
-  incrementGlobalPlayCount,
+  incrementDailyPlayCount,
   checkAndClaimLuckySpot,
   getClubState,
 } from '../storage/club-store';
@@ -62,8 +62,8 @@ export async function handlePlay(
 
     const userState = await recordPlay(userId, postId, optionId, selectedOption.humorProfile);
 
-    const globalPlayNumber = await incrementGlobalPlayCount();
-    const newClubMember = await checkAndClaimLuckySpot(globalPlayNumber, userId);
+    const todayPlayNumber = await incrementDailyPlayCount();
+    const newClubMember = await checkAndClaimLuckySpot(todayPlayNumber, userId);
     const clubState = await getClubState();
 
     const strike = calculateStrike(userState.history);
@@ -83,7 +83,7 @@ export async function handlePlay(
       humorProfile,
       userState,
       shareText,
-      globalPlayNumber,
+      todayPlayNumber,
       newClubMember,
       clubState,
     });

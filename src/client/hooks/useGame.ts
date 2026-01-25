@@ -28,7 +28,7 @@ type GameState = {
     strike: number;
     humorProfile: HumorProfile;
     shareText: string;
-    globalPlayNumber?: number;
+    todayPlayNumber?: number;
     newClubMember?: ClubMember | null;
   } | null;
   error: string | null;
@@ -144,7 +144,7 @@ export function useGame() {
             strike: data.strike,
             humorProfile: data.humorProfile,
             shareText: data.shareText,
-            globalPlayNumber: data.globalPlayNumber,
+            todayPlayNumber: data.todayPlayNumber,
             newClubMember: data.newClubMember,
           },
           clubState: data.clubState,

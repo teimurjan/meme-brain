@@ -44,7 +44,10 @@ export function ClubScreen({ clubState, onBack }: Props) {
     <div className="flex flex-col gap-6 max-w-lg mx-auto">
       <div className="text-center">
         <h1 className="text-2xl font-bold">The 1-42-69 Club</h1>
-        <p className="text-sm text-gray-600 mt-1">Lucky players who claimed legendary spots</p>
+        <p className="text-sm text-gray-600 mt-1">Today's lucky players</p>
+        <p className="text-xs text-gray-500 mt-1">
+          {clubState.todayPlayCount} plays today · Resets at midnight UTC
+        </p>
       </div>
 
       <div className="flex gap-2">

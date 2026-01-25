@@ -4,8 +4,9 @@ import { config } from '../config';
 
 export { calculateStrike, calculateAccumulatedProfile } from '../../shared/utils/humor-profile';
 
+const HISTORY_DAYS = 7;
+
 export const DEFAULT_USER_STATE: UserState = {
-  totalPlays: 0,
   history: [],
 };
 
@@ -39,11 +40,14 @@ export async function recordPlay(
     humorProfile,
     playedAt: new Date().toISOString(),
   };
-  const newHistory = [newEntry, ...state.history].slice(0, config.content.historyLimit);
+
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - HISTORY_DAYS);
+
+  const newHistory = [newEntry, ...state.history].filter((h) => new Date(h.playedAt) > cutoffDate);
 
   const newState: UserState = {
     lastPlayedPost: postId,
-    totalPlays: state.totalPlays + 1,
     history: newHistory,
   };
 
@@ -73,7 +77,6 @@ export async function resetPostPlay(userId: string, postId: string): Promise<Use
   const newHistory = state.history.filter((h) => h.postId !== postId);
   const wasLastPlayed = state.lastPlayedPost === postId;
   const newState: UserState = {
-    totalPlays: Math.max(0, state.totalPlays - 1),
     history: newHistory,
   };
   if (!wasLastPlayed && state.lastPlayedPost) {

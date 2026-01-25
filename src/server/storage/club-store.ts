@@ -2,21 +2,26 @@ import { redis, reddit, context } from '@devvit/web/server';
 import type { ClubMember, ClubState, LuckyNumber } from '../../shared/types';
 import { LUCKY_NUMBERS } from '../../shared/types';
 import { config } from '../config';
+import { getDateKey } from '../../shared/utils/date';
 
-export async function getGlobalPlayCount(): Promise<number> {
-  const key = config.redis.keys.globalPlayCount();
+export async function getDailyPlayCount(): Promise<number> {
+  const dateKey = getDateKey();
+  const key = config.redis.keys.dailyPlayCount(dateKey);
   const count = await redis.get(key);
   return count ? parseInt(count, 10) : 0;
 }
 
-export async function incrementGlobalPlayCount(): Promise<number> {
-  const key = config.redis.keys.globalPlayCount();
+export async function incrementDailyPlayCount(): Promise<number> {
+  const dateKey = getDateKey();
+  const key = config.redis.keys.dailyPlayCount(dateKey);
   const newCount = await redis.incrBy(key, 1);
+  await redis.expire(key, config.redis.dailyTtlSeconds);
   return newCount;
 }
 
-export async function getAllClubMembers(): Promise<Partial<Record<LuckyNumber, ClubMember>>> {
-  const key = config.redis.keys.clubMembers();
+export async function getDailyClubMembers(): Promise<Partial<Record<LuckyNumber, ClubMember>>> {
+  const dateKey = getDateKey();
+  const key = config.redis.keys.dailyClub(dateKey);
   const members: Partial<Record<LuckyNumber, ClubMember>> = {};
 
   for (const num of LUCKY_NUMBERS) {
@@ -30,9 +35,12 @@ export async function getAllClubMembers(): Promise<Partial<Record<LuckyNumber, C
 }
 
 export async function getClubState(): Promise<ClubState> {
-  const [globalPlayCount, members] = await Promise.all([getGlobalPlayCount(), getAllClubMembers()]);
+  const [todayPlayCount, members] = await Promise.all([
+    getDailyPlayCount(),
+    getDailyClubMembers(),
+  ]);
 
-  return { globalPlayCount, members };
+  return { todayPlayCount, members };
 }
 
 function isLuckyNumber(num: number): num is LuckyNumber {
@@ -40,8 +48,9 @@ function isLuckyNumber(num: number): num is LuckyNumber {
 }
 
 export async function resetClubState(): Promise<void> {
-  const countKey = config.redis.keys.globalPlayCount();
-  const membersKey = config.redis.keys.clubMembers();
+  const dateKey = getDateKey();
+  const countKey = config.redis.keys.dailyPlayCount(dateKey);
+  const membersKey = config.redis.keys.dailyClub(dateKey);
 
   await redis.del(countKey);
   await redis.del(membersKey);
@@ -55,7 +64,8 @@ export async function checkAndClaimLuckySpot(
     return null;
   }
 
-  const key = config.redis.keys.clubMembers();
+  const dateKey = getDateKey();
+  const key = config.redis.keys.dailyClub(dateKey);
   const existing = await redis.hGet(key, String(playNumber));
   if (existing) {
     return null;
@@ -79,6 +89,7 @@ export async function checkAndClaimLuckySpot(
   };
 
   await redis.hSet(key, { [String(playNumber)]: JSON.stringify(member) });
+  await redis.expire(key, config.redis.dailyTtlSeconds);
 
   return member;
 }

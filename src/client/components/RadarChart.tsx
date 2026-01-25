@@ -10,10 +10,10 @@ import { HUMOR_TYPES } from '../../shared/types';
 
 type Props = {
   profile: HumorProfile;
-  size?: number;
+  size: number;
 };
 
-export function RadarChart({ profile, size = 300 }: Props) {
+export function RadarChart({ profile, size }: Props) {
   const data = HUMOR_TYPES.map((type) => ({
     subject: type[0]?.toUpperCase() + type.slice(1),
     value: Number((profile[type] * 10).toFixed(1)),
@@ -26,7 +26,7 @@ export function RadarChart({ profile, size = 300 }: Props) {
       height={size}
       width="100%"
       data={data}
-      margin={{ top: 30, right: 30, bottom: 30, left: 30 }}
+      margin={{ top: 15, right: 15, bottom: 0, left: 15 }}
     >
       <PolarGrid stroke="#000000" strokeWidth={2} strokeOpacity={0.2} />
       <PolarAngleAxis

@@ -10,7 +10,7 @@ export type ClubMember = {
 };
 
 export type ClubState = {
-  globalPlayCount: number;
+  todayPlayCount: number;
   members: Partial<Record<LuckyNumber, ClubMember>>;
 };
 

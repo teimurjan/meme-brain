@@ -52,16 +52,15 @@ export const config = {
 
   redis: {
     keys: {
-      challenge: (dateKey: string) => `challenge:${dateKey}`,
-      challengeLock: (dateKey: string) => `challenge:${dateKey}:lock`,
+      challenge: (postId: string) => `challenge:${postId}`,
+      challengeLock: (postId: string) => `challenge:${postId}:lock`,
       userState: (userId: string) => `user:${userId}:state`,
-      userHistory: (userId: string) => `user:${userId}:history`,
-      stats: (dateKey: string) => `stats:${dateKey}`,
-      globalPlayCount: () => 'global:playCount',
-      clubMembers: () => 'club:members',
+      dailyPlayCount: (dateKey: string) => `plays:${dateKey}`,
+      dailyClub: (dateKey: string) => `club:${dateKey}`,
     },
     lockTtlSeconds: 60,
     challengeTtlSeconds: 60 * 60 * 48, // 48 hours
+    dailyTtlSeconds: 60 * 60 * 24 * 7, // 7 days
   },
 } as const;
 

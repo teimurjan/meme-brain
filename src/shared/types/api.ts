@@ -23,7 +23,7 @@ export type PlayResponse = {
   humorProfile: HumorProfile;
   userState: UserState;
   shareText: string;
-  globalPlayNumber: number;
+  todayPlayNumber: number;
   newClubMember: ClubMember | null;
   clubState: ClubState;
 };
