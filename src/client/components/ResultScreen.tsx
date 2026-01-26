@@ -3,6 +3,7 @@ import { useNextMemeCountdown } from '../hooks/useNextMemeCountdown';
 import { ShareableCard } from './ShareableCard';
 import { RadarChart } from './RadarChart';
 import { Button } from './ui/Button';
+import { isProduction } from '../utils/isProduction';
 
 type Props = {
   optionResult: OptionResult;
@@ -10,47 +11,70 @@ type Props = {
   humorProfile: HumorProfile;
   shareText: string;
   onReset?: (clearChallenge?: boolean) => void;
+  onResetClub?: () => void;
+  onShowClub: () => void;
 };
 
-export function ResultScreen({ optionResult, strike, humorProfile, shareText, onReset }: Props) {
-  const isProduction = import.meta.env.VITE_STAGE === 'production';
+export function ResultScreen({
+  optionResult,
+  strike,
+  humorProfile,
+  shareText,
+  onReset,
+  onResetClub,
+  onShowClub,
+}: Props) {
   const countdown = useNextMemeCountdown();
-  console.log('humorProfile', humorProfile);
+
   return (
-    <div className="flex flex-col gap-4 max-w-lg mx-auto">
-      <div className="border-2 border-black bg-yellow-100 p-4 shadow-[4px_4px_0_0] text-center">
+    <div className="flex flex-col gap-3 max-w-lg mx-auto">
+      <div className="border-2 border-black bg-yellow-100 p-2 shadow-[2px_2px_0_0] text-center">
         <p className="text-sm text-gray-600 mb-1">You are</p>
         <h2 className="text-2xl font-bold text-black">{optionResult.label}</h2>
         <p className="mt-2 text-sm italic text-gray-600">"{optionResult.roast}"</p>
       </div>
 
-      {strike > 0 && (
-        <div className="border-2 border-black bg-orange-100 p-3 shadow-[2px_2px_0_0] text-center">
-          <span className="text-2xl font-bold text-black">{strike}</span>
-          <span className="text-sm text-gray-600 ml-2">day streak</span>
-          {strike >= 3 && <span className="ml-1">🔥</span>}
-        </div>
-      )}
+      <div className="flex justify-between items-center">
+        {strike > 0 ? (
+          <div className="flex items-center gap-1.5">
+            <span>🔥</span>
+            <span className="text-lg font-bold">{strike}</span>
+            <span className="text-sm text-gray-600">day streak</span>
+          </div>
+        ) : (
+          <div />
+        )}
+        <Button size="sm" onClick={onShowClub}>
+          1-42-69 Club →
+        </Button>
+      </div>
 
       <RadarChart profile={humorProfile} size={250} />
 
       <ShareableCard text={shareText} />
 
-      {isProduction ? (
+      {isProduction() ? (
         <div className="text-center text-sm text-gray-500">
           Next meme in <span className="font-medium">{countdown}</span>
         </div>
       ) : (
-        onReset && (
-          <div className="flex gap-3 justify-center w-full">
-            <Button onClick={() => onReset(false)} className="flex-1">
-              Play Again
+        <>
+          {onReset && (
+            <div className="flex gap-3 justify-center w-full">
+              <Button onClick={() => onReset(false)} className="flex-1">
+                [DEV] Play Again
+              </Button>
+              <Button onClick={() => onReset(true)} className="flex-1">
+                [DEV] New Challenge
+              </Button>
+            </div>
+          )}
+          {onResetClub && (
+            <Button onClick={onResetClub} className="w-full">
+              [DEV] Reset Club
             </Button>
-            <Button onClick={() => onReset(true)} className="flex-1">
-              New Challenge
-            </Button>
-          </div>
-        )
+          )}
+        </>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import type { Challenge, OptionId, OptionResult, HumorProfile } from './challenge';
 import type { UserState } from './user';
+import type { ClubMember, ClubState } from './club';
 
 export type ChallengeResponse = {
   type: 'challenge';
@@ -7,6 +8,7 @@ export type ChallengeResponse = {
   userState: UserState;
   hasPlayed: boolean;
   selectedOptionId?: OptionId;
+  clubState: ClubState;
 };
 
 export type PlayRequest = {
@@ -21,6 +23,9 @@ export type PlayResponse = {
   humorProfile: HumorProfile;
   userState: UserState;
   shareText: string;
+  todayPlayNumber: number;
+  newClubMember: ClubMember | null;
+  clubState: ClubState;
 };
 
 export type ErrorResponse = {

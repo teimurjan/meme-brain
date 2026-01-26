@@ -9,6 +9,5 @@ export type HistoryEntry = {
 
 export type UserState = {
   lastPlayedPost?: string;
-  totalPlays: number;
   history: HistoryEntry[];
 };

@@ -30,7 +30,6 @@ export async function releaseLock(postId: string): Promise<void> {
 export async function deleteChallenge(postId: string): Promise<void> {
   const key = config.redis.keys.challenge(postId);
   await redis.del(key);
-  console.log(`[challenge-store] Deleted challenge for post ${postId}`);
 }
 
 export async function waitForChallenge(

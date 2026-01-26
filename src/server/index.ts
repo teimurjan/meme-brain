@@ -5,6 +5,7 @@ import { handleGetChallenge } from './api/challenge';
 import { handlePlay } from './api/play';
 import { handleReset } from './api/reset';
 import { handlePostComment } from './api/comment';
+import { handleDebugReset } from './api/debug-reset';
 
 const app = express();
 
@@ -18,6 +19,7 @@ router.get('/api/challenge', handleGetChallenge);
 router.post('/api/play', handlePlay);
 router.post('/api/reset', handleReset);
 router.post('/api/comment', handlePostComment);
+router.post('/api/debug-reset', handleDebugReset);
 
 router.post('/internal/on-app-install', async (_req, res): Promise<void> => {
   try {

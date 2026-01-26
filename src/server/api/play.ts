@@ -8,6 +8,11 @@ import {
   calculateStrike,
   calculateAccumulatedProfile,
 } from '../storage/user-store';
+import {
+  incrementDailyPlayCount,
+  checkAndClaimLuckySpot,
+  getClubState,
+} from '../storage/club-store';
 import { formatShareText } from '../../shared/utils/share-text';
 
 const VALID_OPTION_IDS: OptionId[] = ['A', 'B', 'C'];
@@ -57,13 +62,18 @@ export async function handlePlay(
 
     const userState = await recordPlay(userId, postId, optionId, selectedOption.humorProfile);
 
+    const todayPlayNumber = await incrementDailyPlayCount();
+    const newClubMember = await checkAndClaimLuckySpot(todayPlayNumber, userId);
+    const clubState = await getClubState();
+
     const strike = calculateStrike(userState.history);
     const humorProfile = calculateAccumulatedProfile(userState.history);
     const shareText = formatShareText(
       selectedOption.result.label,
       selectedOption.result.roast,
       humorProfile,
-      strike
+      strike,
+      import.meta.env.VITE_APP_SUBREDDIT_URL
     );
 
     res.json({
@@ -74,6 +84,9 @@ export async function handlePlay(
       humorProfile,
       userState,
       shareText,
+      todayPlayNumber,
+      newClubMember,
+      clubState,
     });
   } catch (error) {
     console.error('Error in handlePlay:', error);

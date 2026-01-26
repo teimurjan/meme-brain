@@ -30,18 +30,21 @@ export function formatShareText(
   label: string,
   roast: string,
   profile: HumorProfile,
-  strike: number
+  strike: number,
+  subredditUrl: string
 ): string {
   const chart = generateAsciiChart(profile);
   const intro = getRandomIntro(label);
-  const strikeText = strike >= 3 ? ` | ${strike}-day streak 🔥` : '';
+  const strikeText = strike >= 3 ? `${strike}-day streak 🔥\n\n` : '';
 
-  return `**Meme Brain**${strikeText}
-
-${intro}
+  return `${strikeText}${intro}
 
 > *"${roast}"*
 
 ${chart}
+
+Play Meme Brain and claim your spot 👇
+
+[${subredditUrl}](${subredditUrl})
 `;
 }
