@@ -4,10 +4,33 @@ import { config } from '../config';
 import {
   getChallenge,
   setChallenge,
+  deleteChallenge,
   acquireLock,
   releaseLock,
   waitForChallenge,
 } from '../storage/challenge-store';
+
+const RESET_INTERVAL_MS = 12 * 60 * 60 * 1000; // 12 hours
+
+function getLastResetTime(): number {
+  const now = Date.now();
+  const todayMidnightUTC = new Date();
+  todayMidnightUTC.setUTCHours(0, 0, 0, 0);
+
+  let lastReset = todayMidnightUTC.getTime();
+
+  while (lastReset + RESET_INTERVAL_MS <= now) {
+    lastReset += RESET_INTERVAL_MS;
+  }
+
+  return lastReset;
+}
+
+function isChallengeStale(challenge: Challenge): boolean {
+  const generatedAt = new Date(challenge.generatedAt).getTime();
+  const lastReset = getLastResetTime();
+  return generatedAt < lastReset;
+}
 import { getFallbackChallenge } from './fallback-challenges';
 import { fetchMeme } from './meme-fetcher';
 import { generateContent } from './llm-client';
@@ -17,8 +40,13 @@ export async function getOrGenerateChallenge(postId: string): Promise<Challenge 
 
   const existing = await getChallenge(postId);
   if (existing) {
-    console.log(`[challenge] Using cached challenge from ${existing.moderation.source}`);
-    return existing;
+    if (isChallengeStale(existing)) {
+      console.log('[challenge] Challenge is stale (generated before last reset), deleting...');
+      await deleteChallenge(postId);
+    } else {
+      console.log(`[challenge] Using cached challenge from ${existing.moderation.source}`);
+      return existing;
+    }
   }
 
   console.log('[challenge] No cached challenge, acquiring lock...');
