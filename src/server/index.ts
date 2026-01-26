@@ -6,6 +6,7 @@ import { handlePlay } from './api/play';
 import { handleReset } from './api/reset';
 import { handlePostComment } from './api/comment';
 import { handleDebugReset } from './api/debug-reset';
+import { handleDailyPostCreate } from './api/scheduler';
 
 const app = express();
 
@@ -45,6 +46,8 @@ router.post('/internal/menu/post-create', async (_req, res): Promise<void> => {
     res.status(400).json({ status: 'error', message: 'Failed to create post' });
   }
 });
+
+router.post('/internal/scheduler/daily-post-create', handleDailyPostCreate);
 
 app.use(router);
 

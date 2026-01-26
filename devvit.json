@@ -39,6 +39,14 @@
   "triggers": {
     "onAppInstall": "/internal/on-app-install"
   },
+  "scheduler": {
+    "tasks": {
+      "daily-post-create": {
+        "endpoint": "/internal/scheduler/daily-post-create",
+        "cron": "0 14 * * *"
+      }
+    }
+  },
   "dev": {
     "subreddit": "{{DEVVIT_DEV_SUBREDDIT}}"
   },
