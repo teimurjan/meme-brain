@@ -1,47 +1,65 @@
-import defaultSnooGray from '../../../assets/default-snoo-gray.png';
-import type { ClubState, LuckyNumber } from '../../shared/types';
+import { useState } from 'react';
+import type { ClubMember, ClubState } from '../../shared/types';
 import { LUCKY_NUMBERS, LUCKY_NUMBER_LORE } from '../../shared/types';
+import { MemberDisplay } from './MemberDisplay';
 import { Button } from './ui/Button';
 
 type Props = {
   clubState: ClubState;
+  myClubMember: ClubMember | null;
   onBack: () => void;
 };
 
-function MemberSlot({
-  luckyNumber,
-  clubState,
-}: {
-  luckyNumber: LuckyNumber;
-  clubState: ClubState;
-}) {
-  const member = clubState.members[luckyNumber];
-  const lore = LUCKY_NUMBER_LORE[luckyNumber];
+type ShareStatus = 'idle' | 'sharing' | 'shared' | 'error';
 
-  return (
-    <div className="flex-1 min-w-0 flex flex-col items-center gap-1 overflow-hidden">
-      <span className="text-lg font-bold text-gray-600">#{luckyNumber}</span>
+function formatClubShareText(member: ClubMember): string {
+  const lore = LUCKY_NUMBER_LORE[member.luckyNumber];
+  return `🏆 I'm player #${member.luckyNumber} in today's 1-42-69 Club!
 
-      <img
-        src={member ? (member.snoovatarUrl ?? defaultSnooGray) : defaultSnooGray}
-        alt={member ? `u/${member.username}'s snoovatar` : 'Default snoo'}
-        className="h-20 w-20 object-contain shrink-0"
-      />
-      <span className="text-xs font-medium truncate max-w-full px-1 text-center">
-        {member ? `u/${member.username}` : 'Unclaimed'}
-      </span>
-      <span className="text-xs text-gray-500 truncate max-w-full px-1">
-        {member ? `r/${member.subredditName}` : '?'}
-      </span>
+"${lore.title}" — ${lore.description}
 
-      <span className="text-xs font-semibold text-center">{lore.title}</span>
-    </div>
-  );
+Play Meme Brain and claim your spot 👇
+
+[${import.meta.env.VITE_APP_SUBREDDIT_URL}](${import.meta.env.VITE_APP_SUBREDDIT_URL})`;
 }
 
-export function ClubScreen({ clubState, onBack }: Props) {
+export function ClubScreen({ clubState, myClubMember, onBack }: Props) {
+  const [shareStatus, setShareStatus] = useState<ShareStatus>('idle');
+
+  const handleShare = async () => {
+    if (!myClubMember || shareStatus === 'sharing' || shareStatus === 'shared') return;
+
+    setShareStatus('sharing');
+
+    try {
+      const res = await fetch('/api/comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: formatClubShareText(myClubMember) }),
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const data = (await res.json()) as { type: 'success' } | { type: 'error'; message: string };
+      if (data.type === 'error') throw new Error(data.message);
+
+      setShareStatus('shared');
+    } catch (err) {
+      console.error('Failed to share club status:', err);
+      setShareStatus('error');
+      setTimeout(() => setShareStatus('idle'), 3000);
+    }
+  };
+
+  const shareButtonText = {
+    idle: `I'm #${myClubMember?.luckyNumber} — Flex It`,
+    sharing: 'Posting...',
+    shared: 'Posted!',
+    error: 'Failed - Try Again',
+  }[shareStatus];
+
   return (
-    <div className="flex flex-col gap-6 max-w-lg mx-auto">
+    <div className="flex flex-col gap-4 max-w-lg mx-auto">
       <div className="text-center">
         <h1 className="text-2xl font-bold">The 1-42-69 Club</h1>
         <p className="text-sm text-gray-600 mt-1">Today's lucky players</p>
@@ -50,32 +68,28 @@ export function ClubScreen({ clubState, onBack }: Props) {
         </p>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-4">
         {LUCKY_NUMBERS.map((num) => (
-          <MemberSlot key={num} luckyNumber={num} clubState={clubState} />
+          <MemberDisplay key={num} luckyNumber={num} clubState={clubState} />
         ))}
       </div>
 
-      <div className="border-2 border-black bg-gray-50 p-4 shadow-[2px_2px_0_0]">
-        <h2 className="font-bold mb-2">Why these numbers?</h2>
-        <ul className="space-y-2 text-sm">
-          {LUCKY_NUMBERS.map((num) => {
-            const lore = LUCKY_NUMBER_LORE[num];
-            return (
-              <li key={num}>
-                <span className="font-semibold">
-                  #{num} - {lore.title}:
-                </span>{' '}
-                <span className="text-gray-600">{lore.description}</span>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+      <div className="flex flex-col gap-2">
+        {myClubMember && (
+          <Button
+            onClick={handleShare}
+            disabled={shareStatus === 'sharing' || shareStatus === 'shared'}
+            variant="secondary"
+            className="w-full"
+          >
+            {shareButtonText}
+          </Button>
+        )}
 
-      <Button onClick={onBack} className="w-full">
-        ← Back to Results
-      </Button>
+        <Button onClick={onBack} className="w-full">
+          ← Back to Results
+        </Button>
+      </div>
     </div>
   );
 }

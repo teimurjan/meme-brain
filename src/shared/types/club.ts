@@ -23,5 +23,5 @@ export const LUCKY_NUMBER_LORE: Record<LuckyNumber, { title: string; description
     title: 'The Answer',
     description: 'The Answer to the Ultimate Question of Life, the Universe, and Everything.',
   },
-  69: { title: 'Nice', description: 'Nice.' },
+  69: { title: 'Nice', description: 'You know exactly why.' },
 };

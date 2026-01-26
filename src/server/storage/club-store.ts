@@ -35,10 +35,7 @@ export async function getDailyClubMembers(): Promise<Partial<Record<LuckyNumber,
 }
 
 export async function getClubState(): Promise<ClubState> {
-  const [todayPlayCount, members] = await Promise.all([
-    getDailyPlayCount(),
-    getDailyClubMembers(),
-  ]);
+  const [todayPlayCount, members] = await Promise.all([getDailyPlayCount(), getDailyClubMembers()]);
 
   return { todayPlayCount, members };
 }

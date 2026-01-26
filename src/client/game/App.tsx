@@ -42,7 +42,11 @@ export const App = () => {
     if (showClub && clubState) {
       return (
         <Layout>
-          <ClubScreen clubState={clubState} onBack={() => setShowClub(false)} />
+          <ClubScreen
+            clubState={clubState}
+            myClubMember={result.newClubMember ?? null}
+            onBack={() => setShowClub(false)}
+          />
         </Layout>
       );
     }

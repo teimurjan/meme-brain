@@ -72,7 +72,8 @@ export async function handlePlay(
       selectedOption.result.label,
       selectedOption.result.roast,
       humorProfile,
-      strike
+      strike,
+      import.meta.env.VITE_APP_SUBREDDIT_URL
     );
 
     res.json({

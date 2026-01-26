@@ -36,7 +36,7 @@ export function ShareableCard({ text }: Props) {
   };
 
   const buttonText = {
-    idle: 'Share on Reddit',
+    idle: 'Share Your Humor Profile',
     posting: 'Sharing...',
     posted: 'Shared!',
     error: 'Failed - Try Again',

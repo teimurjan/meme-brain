@@ -21,9 +21,9 @@ export const Splash = () => {
       const data = await res.json();
 
       if (data.success) {
-        setResetResult(`Deleted ${data.deletedKeys.length} keys`);
+        setResetResult(data.message);
       } else {
-        setResetResult('Reset failed');
+        setResetResult(data.message || 'Reset failed');
       }
     } catch (err) {
       setResetResult('Error: ' + (err instanceof Error ? err.message : 'Unknown'));

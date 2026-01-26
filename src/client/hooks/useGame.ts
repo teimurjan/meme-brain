@@ -84,7 +84,8 @@ export function useGame() {
                   option.result.label,
                   option.result.roast,
                   humorProfile,
-                  strike
+                  strike,
+                  import.meta.env.VITE_APP_SUBREDDIT_URL
                 ),
               }
             : null,
