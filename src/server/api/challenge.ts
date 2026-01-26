@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import type { ChallengeResponse, ErrorResponse } from '../../shared/types';
 import { reddit, context } from '@devvit/web/server';
-import { getUserState, getSelectedOption, hasPlayedPost } from '../storage/user-store';
+import { getUserState, getSelectedOption, hasPlayedChallenge } from '../storage/user-store';
 import { getClubState } from '../storage/club-store';
 import { getOrGenerateChallenge } from '../core/challenge-generator';
 
@@ -26,7 +26,7 @@ export async function handleGetChallenge(
     }
 
     const userState = await getUserState(userId);
-    const hasPlayed = await hasPlayedPost(userId, postId);
+    const hasPlayed = await hasPlayedChallenge(userId, postId, challenge.generatedAt);
     const selectedOptionId = hasPlayed ? await getSelectedOption(userId, postId) : undefined;
     const clubState = await getClubState();
 

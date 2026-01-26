@@ -1,34 +1,38 @@
 import type { HumorProfile, HistoryEntry } from '../types';
 import { createEmptyHumorProfile, HUMOR_TYPES } from '../types';
-
-function getDateKey(isoString: string): string {
-  return isoString.split('T')[0]!;
-}
+import { getCycleKey } from './date';
 
 export function calculateStrike(history: HistoryEntry[]): number {
   if (history.length === 0) return 0;
 
-  const today = getDateKey(new Date().toISOString());
-  const sortedDates = history.map((h) => getDateKey(h.playedAt)).sort((a, b) => b.localeCompare(a));
+  const currentCycle = getCycleKey(new Date());
+  const sortedCycles = history
+    .map((h) => getCycleKey(new Date(h.playedAt)))
+    .sort((a, b) => b.localeCompare(a));
 
-  const uniqueDates = [...new Set(sortedDates)];
-  if (uniqueDates.length === 0) return 0;
+  const uniqueCycles = [...new Set(sortedCycles)];
+  if (uniqueCycles.length === 0) return 0;
 
-  const mostRecentDate = uniqueDates[0]!;
-  const yesterday = getDateKey(new Date(Date.now() - 86400000).toISOString());
+  const mostRecentCycle = uniqueCycles[0]!;
 
-  if (mostRecentDate !== today && mostRecentDate !== yesterday) {
+  // Calculate previous cycle key
+  const yesterday = new Date();
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const previousCycle = getCycleKey(yesterday);
+
+  // Must have played in current or previous cycle to have an active streak
+  if (mostRecentCycle !== currentCycle && mostRecentCycle !== previousCycle) {
     return 0;
   }
 
   let strike = 0;
-  let expectedDate = new Date(mostRecentDate);
+  const expectedCycleDate = new Date(mostRecentCycle + 'T12:00:00Z');
 
-  for (const dateStr of uniqueDates) {
-    const expectedDateStr = getDateKey(expectedDate.toISOString());
-    if (dateStr === expectedDateStr) {
+  for (const cycleStr of uniqueCycles) {
+    const expectedCycleStr = getCycleKey(expectedCycleDate);
+    if (cycleStr === expectedCycleStr) {
       strike++;
-      expectedDate = new Date(expectedDate.getTime() - 86400000);
+      expectedCycleDate.setUTCDate(expectedCycleDate.getUTCDate() - 1);
     } else {
       break;
     }

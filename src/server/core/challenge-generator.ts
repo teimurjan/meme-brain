@@ -1,5 +1,5 @@
 import type { Challenge, MemeSource, LLMGeneratedContent } from '../../shared/types';
-import { generateSeed } from '../../shared/utils/date';
+import { generateSeed, getLastResetTime } from '../../shared/utils/date';
 import { config } from '../config';
 import {
   getChallenge,
@@ -10,25 +10,9 @@ import {
   waitForChallenge,
 } from '../storage/challenge-store';
 
-const RESET_INTERVAL_MS = 12 * 60 * 60 * 1000; // 12 hours
-
-function getLastResetTime(): number {
-  const now = Date.now();
-  const todayMidnightUTC = new Date();
-  todayMidnightUTC.setUTCHours(0, 0, 0, 0);
-
-  let lastReset = todayMidnightUTC.getTime();
-
-  while (lastReset + RESET_INTERVAL_MS <= now) {
-    lastReset += RESET_INTERVAL_MS;
-  }
-
-  return lastReset;
-}
-
 function isChallengeStale(challenge: Challenge): boolean {
   const generatedAt = new Date(challenge.generatedAt).getTime();
-  const lastReset = getLastResetTime();
+  const lastReset = getLastResetTime().getTime();
   return generatedAt < lastReset;
 }
 import { getFallbackChallenge } from './fallback-challenges';

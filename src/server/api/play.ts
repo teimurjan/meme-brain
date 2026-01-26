@@ -4,7 +4,7 @@ import { reddit, context } from '@devvit/web/server';
 import { getChallenge } from '../storage/challenge-store';
 import {
   recordPlay,
-  hasPlayedPost,
+  hasPlayedChallenge,
   calculateStrike,
   calculateAccumulatedProfile,
 } from '../storage/user-store';
@@ -42,15 +42,15 @@ export async function handlePlay(
     const username = await reddit.getCurrentUsername();
     const userId = username ?? 'anonymous';
 
-    const alreadyPlayed = await hasPlayedPost(userId, postId);
-    if (alreadyPlayed) {
-      res.status(400).json({ type: 'error', message: 'Already played this challenge' });
-      return;
-    }
-
     const challenge = await getChallenge(postId);
     if (!challenge) {
       res.status(404).json({ type: 'error', message: 'No challenge found' });
+      return;
+    }
+
+    const alreadyPlayed = await hasPlayedChallenge(userId, postId, challenge.generatedAt);
+    if (alreadyPlayed) {
+      res.status(400).json({ type: 'error', message: 'Already played this challenge' });
       return;
     }
 

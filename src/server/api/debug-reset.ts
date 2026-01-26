@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { redis, reddit, context } from '@devvit/web/server';
 import { config } from '../config';
-import { getDateKey } from '../../shared/utils/date';
+import { getCycleKey } from '../../shared/utils/date';
 
 type DebugResetResponse = {
   type: 'debug-reset';
@@ -15,7 +15,7 @@ export async function handleDebugReset(
 ): Promise<void> {
   try {
     const deletedKeys: string[] = [];
-    const dateKey = getDateKey();
+    const dateKey = getCycleKey();
     const postId = context.postId;
 
     const dailyPlayKey = config.redis.keys.dailyPlayCount(dateKey);

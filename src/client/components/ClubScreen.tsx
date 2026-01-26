@@ -64,7 +64,7 @@ export function ClubScreen({ clubState, myClubMember, onBack }: Props) {
         <h1 className="text-2xl font-bold">The 1-42-69 Club</h1>
         <p className="text-sm text-gray-600 mt-1">Today's lucky players</p>
         <p className="text-xs text-gray-500 mt-1">
-          {clubState.todayPlayCount} plays today · Resets at midnight UTC
+          {clubState.todayPlayCount} plays today · Resets at 12:00 UTC
         </p>
       </div>
 

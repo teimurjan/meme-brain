@@ -18,6 +18,7 @@
     "devvit:reset": "node tools/reset-devvit.js",
     "devvit:setup": "node tools/setup-devvit.js",
     "devvit:verify": "node tools/verify-devvit.js",
+    "publish": "devvit publish",
     "launch": "npm run build && npm run deploy && devvit publish",
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src",

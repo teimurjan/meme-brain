@@ -30,10 +30,6 @@ export async function recordPlay(
 ): Promise<UserState> {
   const state = await getUserState(userId);
 
-  if (state.history.some((h) => h.postId === postId)) {
-    return state;
-  }
-
   const newEntry = {
     postId,
     optionId,
@@ -44,7 +40,11 @@ export async function recordPlay(
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - HISTORY_DAYS);
 
-  const newHistory = [newEntry, ...state.history].filter((h) => new Date(h.playedAt) > cutoffDate);
+  // Remove old entry for same post (if playing new challenge), then add new entry
+  const filteredHistory = state.history.filter(
+    (h) => h.postId !== postId && new Date(h.playedAt) > cutoffDate
+  );
+  const newHistory = [newEntry, ...filteredHistory];
 
   const newState: UserState = {
     lastPlayedPost: postId,
@@ -55,9 +55,19 @@ export async function recordPlay(
   return newState;
 }
 
-export async function hasPlayedPost(userId: string, postId: string): Promise<boolean> {
+export async function hasPlayedChallenge(
+  userId: string,
+  postId: string,
+  challengeGeneratedAt: string
+): Promise<boolean> {
   const state = await getUserState(userId);
-  return state.history.some((h) => h.postId === postId);
+  const entry = state.history.find((h) => h.postId === postId);
+  if (!entry) return false;
+
+  const playedAt = new Date(entry.playedAt).getTime();
+  const generatedAt = new Date(challengeGeneratedAt).getTime();
+
+  return playedAt >= generatedAt;
 }
 
 export async function getSelectedOption(userId: string, postId: string): Promise<OptionId | null> {
