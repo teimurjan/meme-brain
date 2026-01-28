@@ -1,12 +1,14 @@
+import { useState } from 'react';
 import { useGame } from '../hooks/useGame';
 import { GameScreen } from '../components/GameScreen';
 import { ResultScreen } from '../components/ResultScreen';
 import { ClubScreen } from '../components/ClubScreen';
+import { SplashScreen } from '../components/SplashScreen';
 import { Layout } from '../components/ui/Layout';
 import { ErrorScreen } from '../components/ErrorScreen';
 import { LoadingScreen } from '../components/LoadingScreen';
 
-export const App = () => {
+function GameContent() {
   const {
     status,
     challenge,
@@ -80,4 +82,18 @@ export const App = () => {
   }
 
   return null;
+}
+
+export const App = () => {
+  const [started, setStarted] = useState(false);
+
+  if (!started) {
+    return (
+      <Layout className="items-center justify-center">
+        <SplashScreen onPlay={() => setStarted(true)} />
+      </Layout>
+    );
+  }
+
+  return <GameContent />;
 };

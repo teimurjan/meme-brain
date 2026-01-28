@@ -1,8 +1,4 @@
-# meme-brain
-
-<p align="center">
-  <img src="assets/icon.png" alt="meme-brain" width="128" height="128">
-</p>
+# MemeBrain
 
 A Reddit game where you pick the funniest wrong take on a meme.
 

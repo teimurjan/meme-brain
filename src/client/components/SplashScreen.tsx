@@ -1,14 +1,13 @@
-import '../index.css';
-
-import { requestExpandedMode } from '@devvit/web/client';
-import { StrictMode, useState } from 'react';
-import { createRoot } from 'react-dom/client';
+import { useState } from 'react';
 import Logo from '../../../assets/icon.svg?react';
-import { Button } from '../components/ui/Button';
-import { Layout } from '../components/ui/Layout';
+import { Button } from './ui/Button';
 import { isProduction } from '../utils/isProduction';
 
-export const Splash = () => {
+type Props = {
+  onPlay: () => void;
+};
+
+export function SplashScreen({ onPlay }: Props) {
   const [resetting, setResetting] = useState(false);
   const [resetResult, setResetResult] = useState<string | null>(null);
 
@@ -33,42 +32,28 @@ export const Splash = () => {
   };
 
   return (
-    <Layout className="relative justify-center items-center gap-6">
+    <div className="relative flex flex-col justify-center items-center gap-6 h-full">
       <Logo className="w-28 h-28" />
 
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-3xl font-bold text-gray-900">Meme Brain</h1>
         <p className="text-sm text-gray-600 max-w-xs">
-          Pick how you'd misread the meme. Get roasted. Share your result.
+          Pick the funniest wrong take. Get roasted. Share your result.
         </p>
       </div>
 
-      <div className="flex flex-col items-center gap-3">
-        <Button size="lg" shadow="lg" onClick={(e) => requestExpandedMode(e.nativeEvent, 'game')}>
-          Play Today's Challenge
-        </Button>
-      </div>
+      <Button size="lg" shadow="lg" onClick={onPlay}>
+        Play Today's Challenge
+      </Button>
 
       {!isProduction() && (
         <div className="absolute bottom-4 left-4 right-4 flex flex-col items-center gap-1">
-          <Button
-            onClick={handleDebugReset}
-            disabled={resetting}
-            variant="primary"
-            size="sm"
-            shadow="sm"
-          >
+          <Button onClick={handleDebugReset} disabled={resetting} size="sm">
             {resetting ? 'Resetting...' : '[DEV] Reset Database'}
           </Button>
           {resetResult && <span className="text-xs text-gray-500">{resetResult}</span>}
         </div>
       )}
-    </Layout>
+    </div>
   );
-};
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Splash />
-  </StrictMode>
-);
+}
