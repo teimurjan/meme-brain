@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ClubMember, ClubState } from '../../shared/types';
 import { LUCKY_NUMBERS, LUCKY_NUMBER_LORE } from '../../shared/types';
 import { MemberDisplay } from './MemberDisplay';
+import { ProfileScreen } from './ProfileScreen';
 import { Button } from './ui/Button';
 
 type Props = {
@@ -25,6 +26,7 @@ Play Meme Brain and claim your spot 👇
 
 export function ClubScreen({ clubState, myClubMember, onBack }: Props) {
   const [shareStatus, setShareStatus] = useState<ShareStatus>('idle');
+  const [viewingProfile, setViewingProfile] = useState<ClubMember | null>(null);
 
   const handleShare = async () => {
     if (!myClubMember || shareStatus === 'sharing' || shareStatus === 'shared') return;
@@ -58,6 +60,10 @@ export function ClubScreen({ clubState, myClubMember, onBack }: Props) {
     error: 'Failed - Try Again',
   }[shareStatus];
 
+  if (viewingProfile) {
+    return <ProfileScreen member={viewingProfile} onBack={() => setViewingProfile(null)} />;
+  }
+
   return (
     <div className="flex flex-col gap-4 max-w-lg mx-auto">
       <div className="text-center">
@@ -70,7 +76,12 @@ export function ClubScreen({ clubState, myClubMember, onBack }: Props) {
 
       <div className="flex flex-col gap-4">
         {LUCKY_NUMBERS.map((num) => (
-          <MemberDisplay key={num} luckyNumber={num} clubState={clubState} />
+          <MemberDisplay
+            key={num}
+            luckyNumber={num}
+            clubState={clubState}
+            onMemberClick={setViewingProfile}
+          />
         ))}
       </div>
 

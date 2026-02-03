@@ -32,7 +32,7 @@ export function SplashScreen({ onPlay }: Props) {
   };
 
   return (
-    <div className="relative flex flex-col justify-center items-center gap-6 h-full">
+    <div className="flex flex-col justify-center items-center gap-6 h-full">
       <Logo className="w-28 h-28" />
 
       <div className="flex flex-col items-center gap-2 text-center">

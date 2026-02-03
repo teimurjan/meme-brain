@@ -3,6 +3,7 @@ import type { ClubMember, ClubState, LuckyNumber } from '../../shared/types';
 import { LUCKY_NUMBERS } from '../../shared/types';
 import { config } from '../config';
 import { getCycleKey } from '../../shared/utils/date';
+import { getUserState, calculateAccumulatedProfile } from './user-store';
 
 export async function getDailyPlayCount(): Promise<number> {
   const dateKey = getCycleKey();
@@ -24,10 +25,21 @@ export async function getDailyClubMembers(): Promise<Partial<Record<LuckyNumber,
   const key = config.redis.keys.dailyClub(dateKey);
   const members: Partial<Record<LuckyNumber, ClubMember>> = {};
 
-  for (const num of LUCKY_NUMBERS) {
+  const memberPromises = LUCKY_NUMBERS.map(async (num) => {
     const data = await redis.hGet(key, String(num));
-    if (data) {
-      members[num] = JSON.parse(data) as ClubMember;
+    if (!data) return null;
+
+    const member = JSON.parse(data) as ClubMember;
+    const userState = await getUserState(member.username);
+    const humorProfile = calculateAccumulatedProfile(userState.history);
+
+    return { num, member: { ...member, humorProfile } };
+  });
+
+  const results = await Promise.all(memberPromises);
+  for (const result of results) {
+    if (result) {
+      members[result.num] = result.member;
     }
   }
 
@@ -69,10 +81,28 @@ export async function checkAndClaimLuckySpot(
   }
 
   let snoovatarUrl: string | null = null;
+  let displayName: string | undefined;
+  let about: string | undefined;
+  let accountCreatedAt: string | undefined;
+  let linkKarma: number | undefined;
+  let commentKarma: number | undefined;
+
   try {
-    snoovatarUrl = (await reddit.getSnoovatarUrl(username)) ?? null;
+    const user = await reddit.getUserByUsername(username);
+    if (user) {
+      snoovatarUrl = (await user.getSnoovatarUrl()) ?? null;
+      displayName = user.displayName;
+      about = user.about;
+      accountCreatedAt = user.createdAt.toISOString();
+      linkKarma = user.linkKarma;
+      commentKarma = user.commentKarma;
+    }
   } catch {
-    // snoovatar not available, that's fine
+    try {
+      snoovatarUrl = (await reddit.getSnoovatarUrl(username)) ?? null;
+    } catch {
+      // snoovatar not available, that's fine
+    }
   }
 
   const subredditName = context.subredditName ?? 'unknown';
@@ -83,6 +113,11 @@ export async function checkAndClaimLuckySpot(
     snoovatarUrl,
     subredditName,
     claimedAt: new Date().toISOString(),
+    displayName,
+    about,
+    accountCreatedAt,
+    linkKarma,
+    commentKarma,
   };
 
   await redis.hSet(key, { [String(playNumber)]: JSON.stringify(member) });

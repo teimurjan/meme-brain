@@ -1,3 +1,5 @@
+import type { HumorProfile } from './challenge';
+
 export const LUCKY_NUMBERS = [1, 42, 69] as const;
 export type LuckyNumber = (typeof LUCKY_NUMBERS)[number];
 
@@ -7,6 +9,12 @@ export type ClubMember = {
   snoovatarUrl: string | null;
   subredditName: string;
   claimedAt: string;
+  displayName?: string | undefined;
+  about?: string | undefined;
+  accountCreatedAt?: string | undefined;
+  linkKarma?: number | undefined;
+  commentKarma?: number | undefined;
+  humorProfile?: HumorProfile | undefined;
 };
 
 export type ClubState = {

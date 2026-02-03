@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import defaultSnooGray from '../../../assets/default-snoo-gray.png';
-import type { ClubState, LuckyNumber } from '../../shared/types';
+import type { ClubMember, ClubState, LuckyNumber } from '../../shared/types';
 import { LUCKY_NUMBER_LORE } from '../../shared/types';
 import { Badge } from './ui/Badge';
 
@@ -13,9 +13,11 @@ const badgeVariant: Record<LuckyNumber, 'success' | 'info' | 'warning'> = {
 export function MemberDisplay({
   luckyNumber,
   clubState,
+  onMemberClick,
 }: {
   luckyNumber: LuckyNumber;
   clubState: ClubState;
+  onMemberClick: (member: ClubMember) => void;
 }) {
   const member = clubState.members[luckyNumber];
   const lore = LUCKY_NUMBER_LORE[luckyNumber];
@@ -31,7 +33,13 @@ export function MemberDisplay({
       <div className="flex flex-col gap-1 min-w-0">
         <div className="flex items-center gap-2">
           <Badge variant={badgeVariant[luckyNumber]}>#{luckyNumber}</Badge>
-          <span className={clsx('font-semibold truncate', !member && 'text-gray-500')}>
+          <span
+            className={clsx(
+              'font-semibold truncate',
+              member ? 'cursor-pointer hover:underline' : 'text-gray-500'
+            )}
+            onClick={member ? () => onMemberClick(member) : undefined}
+          >
             {member ? `u/${member.username}` : 'u/???'}
           </span>
         </div>
