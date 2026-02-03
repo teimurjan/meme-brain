@@ -1,5 +1,7 @@
 import type { ClubMember } from '../../shared/types';
 import { LUCKY_NUMBER_LORE } from '../../shared/types';
+import { formatAccountAge, formatDate } from '../../shared/utils/date';
+import { formatKarma } from '../../shared/utils/format';
 import defaultSnooGray from '../../../assets/default-snoo-gray.png';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
@@ -8,33 +10,6 @@ type Props = {
   member: ClubMember;
   onBack: () => void;
 };
-
-function formatAccountAge(createdAt: string): string {
-  const created = new Date(createdAt);
-  const now = new Date();
-  const diffMs = now.getTime() - created.getTime();
-  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (days < 30) return `${days}d`;
-  if (days < 365) return `${Math.floor(days / 30)}mo`;
-  const years = Math.floor(days / 365);
-  const remainingMonths = Math.floor((days % 365) / 30);
-  return remainingMonths > 0 ? `${years}y ${remainingMonths}mo` : `${years}y`;
-}
-
-function formatKarma(karma: number): string {
-  if (karma >= 1_000_000) return `${(karma / 1_000_000).toFixed(1)}M`;
-  if (karma >= 1_000) return `${(karma / 1_000).toFixed(1)}k`;
-  return String(karma);
-}
-
-function formatDate(createdAt: string): string {
-  return new Date(createdAt).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
 
 export function ProfileScreen({ member, onBack }: Props) {
   const lore = LUCKY_NUMBER_LORE[member.luckyNumber];

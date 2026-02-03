@@ -103,3 +103,24 @@ export function generateSeed(dateKey: string): string {
   }
   return Math.abs(hash).toString(36);
 }
+
+export function formatAccountAge(createdAt: string): string {
+  const created = new Date(createdAt);
+  const now = new Date();
+  const diffMs = now.getTime() - created.getTime();
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (days < 30) return `${days}d`;
+  if (days < 365) return `${Math.floor(days / 30)}mo`;
+  const years = Math.floor(days / 365);
+  const remainingMonths = Math.floor((days % 365) / 30);
+  return remainingMonths > 0 ? `${years}y ${remainingMonths}mo` : `${years}y`;
+}
+
+export function formatDate(createdAt: string): string {
+  return new Date(createdAt).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
