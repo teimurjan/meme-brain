@@ -69,10 +69,32 @@ export async function checkAndClaimLuckySpot(
   }
 
   let snoovatarUrl: string | null = null;
+  let displayName: string | undefined;
+  let about: string | undefined;
+  let accountCreatedAt: string | undefined;
+  let linkKarma: number | undefined;
+  let commentKarma: number | undefined;
+  let hasVerifiedEmail: boolean | undefined;
+  let isAdmin: boolean | undefined;
+
   try {
-    snoovatarUrl = (await reddit.getSnoovatarUrl(username)) ?? null;
+    const user = await reddit.getUserByUsername(username);
+    if (user) {
+      snoovatarUrl = (await user.getSnoovatarUrl()) ?? null;
+      displayName = user.displayName;
+      about = user.about;
+      accountCreatedAt = user.createdAt.toISOString();
+      linkKarma = user.linkKarma;
+      commentKarma = user.commentKarma;
+      hasVerifiedEmail = user.hasVerifiedEmail;
+      isAdmin = user.isAdmin;
+    }
   } catch {
-    // snoovatar not available, that's fine
+    try {
+      snoovatarUrl = (await reddit.getSnoovatarUrl(username)) ?? null;
+    } catch {
+       // snoovatar not available, that's fine
+    }
   }
 
   const subredditName = context.subredditName ?? 'unknown';
@@ -83,6 +105,13 @@ export async function checkAndClaimLuckySpot(
     snoovatarUrl,
     subredditName,
     claimedAt: new Date().toISOString(),
+    displayName,
+    about,
+    accountCreatedAt,
+    linkKarma,
+    commentKarma,
+    hasVerifiedEmail,
+    isAdmin,
   };
 
   await redis.hSet(key, { [String(playNumber)]: JSON.stringify(member) });

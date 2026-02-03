@@ -7,6 +7,13 @@ export type ClubMember = {
   snoovatarUrl: string | null;
   subredditName: string;
   claimedAt: string;
+  displayName?: string | undefined;
+  about?: string | undefined;
+  accountCreatedAt?: string | undefined;
+  linkKarma?: number | undefined;
+  commentKarma?: number | undefined;
+  hasVerifiedEmail?: boolean | undefined;
+  isAdmin?: boolean | undefined;
 };
 
 export type ClubState = {
