@@ -3,6 +3,7 @@ import type { ClubMember, ClubState, LuckyNumber } from '../../shared/types';
 import { LUCKY_NUMBERS } from '../../shared/types';
 import { config } from '../config';
 import { getCycleKey } from '../../shared/utils/date';
+import { getUserState, calculateAccumulatedProfile } from './user-store';
 
 export async function getDailyPlayCount(): Promise<number> {
   const dateKey = getCycleKey();
@@ -24,10 +25,21 @@ export async function getDailyClubMembers(): Promise<Partial<Record<LuckyNumber,
   const key = config.redis.keys.dailyClub(dateKey);
   const members: Partial<Record<LuckyNumber, ClubMember>> = {};
 
-  for (const num of LUCKY_NUMBERS) {
+  const memberPromises = LUCKY_NUMBERS.map(async (num) => {
     const data = await redis.hGet(key, String(num));
-    if (data) {
-      members[num] = JSON.parse(data) as ClubMember;
+    if (!data) return null;
+
+    const member = JSON.parse(data) as ClubMember;
+    const userState = await getUserState(member.username);
+    const humorProfile = calculateAccumulatedProfile(userState.history);
+
+    return { num, member: { ...member, humorProfile } };
+  });
+
+  const results = await Promise.all(memberPromises);
+  for (const result of results) {
+    if (result) {
+      members[result.num] = result.member;
     }
   }
 
@@ -74,8 +86,6 @@ export async function checkAndClaimLuckySpot(
   let accountCreatedAt: string | undefined;
   let linkKarma: number | undefined;
   let commentKarma: number | undefined;
-  let hasVerifiedEmail: boolean | undefined;
-  let isAdmin: boolean | undefined;
 
   try {
     const user = await reddit.getUserByUsername(username);
@@ -86,14 +96,12 @@ export async function checkAndClaimLuckySpot(
       accountCreatedAt = user.createdAt.toISOString();
       linkKarma = user.linkKarma;
       commentKarma = user.commentKarma;
-      hasVerifiedEmail = user.hasVerifiedEmail;
-      isAdmin = user.isAdmin;
     }
   } catch {
     try {
       snoovatarUrl = (await reddit.getSnoovatarUrl(username)) ?? null;
     } catch {
-       // snoovatar not available, that's fine
+      // snoovatar not available, that's fine
     }
   }
 
@@ -110,8 +118,6 @@ export async function checkAndClaimLuckySpot(
     accountCreatedAt,
     linkKarma,
     commentKarma,
-    hasVerifiedEmail,
-    isAdmin,
   };
 
   await redis.hSet(key, { [String(playNumber)]: JSON.stringify(member) });

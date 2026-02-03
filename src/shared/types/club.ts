@@ -1,3 +1,5 @@
+import type { HumorProfile } from './challenge';
+
 export const LUCKY_NUMBERS = [1, 42, 69] as const;
 export type LuckyNumber = (typeof LUCKY_NUMBERS)[number];
 
@@ -12,8 +14,7 @@ export type ClubMember = {
   accountCreatedAt?: string | undefined;
   linkKarma?: number | undefined;
   commentKarma?: number | undefined;
-  hasVerifiedEmail?: boolean | undefined;
-  isAdmin?: boolean | undefined;
+  humorProfile?: HumorProfile | undefined;
 };
 
 export type ClubState = {
