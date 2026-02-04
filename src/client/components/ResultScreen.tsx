@@ -28,9 +28,9 @@ export function ResultScreen({
 
   return (
     <div className="flex flex-col gap-3 max-w-lg mx-auto">
-      <div className="border-2 border-black bg-yellow-100 p-2 shadow-[2px_2px_0_0] text-center">
+      <div className="border-2 border-black bg-yellow-100 p-2 shadow-[4px_4px_0_0] text-center">
         <p className="text-sm text-gray-600 mb-1">You are</p>
-        <h2 className="text-2xl font-bold text-black">{optionResult.label}</h2>
+        <h2 className="text-xl font-bold text-black">{optionResult.label}</h2>
         <p className="mt-2 text-sm italic text-gray-600">"{optionResult.roast}"</p>
       </div>
 
@@ -49,7 +49,7 @@ export function ResultScreen({
         </Button>
       </div>
 
-      <RadarChart profile={humorProfile} size={250} />
+      <RadarChart profile={humorProfile} size={200} />
 
       <ShareableCard text={shareText} />
 

@@ -40,10 +40,7 @@ export async function recordPlay(
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - HISTORY_DAYS);
 
-  // Remove old entry for same post (if playing new challenge), then add new entry
-  const filteredHistory = state.history.filter(
-    (h) => h.postId !== postId && new Date(h.playedAt) > cutoffDate
-  );
+  const filteredHistory = state.history.filter((h) => new Date(h.playedAt) > cutoffDate);
   const newHistory = [newEntry, ...filteredHistory];
 
   const newState: UserState = {

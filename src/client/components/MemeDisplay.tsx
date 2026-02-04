@@ -14,7 +14,7 @@ export function MemeDisplay({ meme }: Props) {
         <button
           type="button"
           onClick={() => setIsFullscreen(true)}
-          className="relative border-2 border-black overflow-hidden shadow-[2px_2px_0_0] cursor-zoom-in"
+          className="relative border-2 border-black overflow-hidden shadow-[4px_4px_0_0] cursor-zoom-in"
         >
           <img
             src={meme.imageUrl}

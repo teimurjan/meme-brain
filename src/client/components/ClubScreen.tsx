@@ -2,13 +2,13 @@ import { useState } from 'react';
 import type { ClubMember, ClubState } from '../../shared/types';
 import { LUCKY_NUMBERS, LUCKY_NUMBER_LORE } from '../../shared/types';
 import { MemberDisplay } from './MemberDisplay';
-import { ProfileScreen } from './ProfileScreen';
 import { Button } from './ui/Button';
 
 type Props = {
   clubState: ClubState;
   myClubMember: ClubMember | null;
   onBack: () => void;
+  onViewProfile: (member: ClubMember) => void;
 };
 
 type ShareStatus = 'idle' | 'sharing' | 'shared' | 'error';
@@ -24,9 +24,8 @@ Play Meme Brain and claim your spot 👇
 [${import.meta.env.VITE_APP_SUBREDDIT_URL}](${import.meta.env.VITE_APP_SUBREDDIT_URL})`;
 }
 
-export function ClubScreen({ clubState, myClubMember, onBack }: Props) {
+export function ClubScreen({ clubState, myClubMember, onBack, onViewProfile }: Props) {
   const [shareStatus, setShareStatus] = useState<ShareStatus>('idle');
-  const [viewingProfile, setViewingProfile] = useState<ClubMember | null>(null);
 
   const handleShare = async () => {
     if (!myClubMember || shareStatus === 'sharing' || shareStatus === 'shared') return;
@@ -60,27 +59,23 @@ export function ClubScreen({ clubState, myClubMember, onBack }: Props) {
     error: 'Failed - Try Again',
   }[shareStatus];
 
-  if (viewingProfile) {
-    return <ProfileScreen member={viewingProfile} onBack={() => setViewingProfile(null)} />;
-  }
-
   return (
     <div className="flex flex-col gap-4 max-w-lg mx-auto">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold">The 1-42-69 Club</h1>
-        <p className="text-sm text-gray-600 mt-1">Today's lucky players</p>
-        <p className="text-xs text-gray-500 mt-1">
+      <div className="text-center mb-2">
+        <h1 className="text-2xl font-bold text-zinc-200">1-42-69 Club</h1>
+        <p className="text-sm text-zinc-200 mt-1">Today's lucky players</p>
+        <p className="text-xs text-zinc-300 mt-1">
           {clubState.todayPlayCount} plays today · Resets at 12:00 UTC
         </p>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 border-2 border-black bg-zinc-700 px-2 py-4 shadow-[4px_4px_0_0]">
         {LUCKY_NUMBERS.map((num) => (
           <MemberDisplay
             key={num}
             luckyNumber={num}
             clubState={clubState}
-            onMemberClick={setViewingProfile}
+            onMemberClick={onViewProfile}
           />
         ))}
       </div>

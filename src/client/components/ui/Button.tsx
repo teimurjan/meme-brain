@@ -25,11 +25,6 @@ const sizeStyles: Record<ButtonSize, string> = {
   lg: 'px-5 py-3 font-semibold',
 };
 
-const shadowStyles = {
-  sm: 'shadow-[2px_2px_0_0] disabled:active:shadow-[2px_2px_0_0]',
-  lg: 'shadow-[4px_4px_0_0] disabled:active:shadow-[4px_4px_0_0]',
-};
-
 export function Button({
   variant = 'primary',
   size = 'md',
@@ -45,7 +40,7 @@ export function Button({
         baseStyles,
         variantStyles[variant],
         sizeStyles[size],
-        shadowStyles[shadow],
+        'shadow-[4px_4px_0_0] disabled:active:shadow-[4px_4px_0_0]',
         selected && 'ring-2 ring-yellow-300 outline-0',
         className
       )}

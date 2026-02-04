@@ -1,14 +1,17 @@
 import { useState } from 'react';
+import type { ClubMember } from '../../shared/types';
 import { useGame } from '../hooks/useGame';
 import { GameScreen } from '../components/GameScreen';
 import { ResultScreen } from '../components/ResultScreen';
 import { ClubScreen } from '../components/ClubScreen';
+import { ProfileScreen } from '../components/ProfileScreen';
 import { SplashScreen } from '../components/SplashScreen';
 import { Layout } from '../components/ui/Layout';
 import { ErrorScreen } from '../components/ErrorScreen';
 import { LoadingScreen } from '../components/LoadingScreen';
 
 function GameContent() {
+  const [viewingProfile, setViewingProfile] = useState<ClubMember | null>(null);
   const {
     status,
     challenge,
@@ -41,13 +44,22 @@ function GameContent() {
   }
 
   if (status === 'result' && result) {
-    if (showClub && clubState) {
+    if (viewingProfile) {
       return (
         <Layout>
+          <ProfileScreen member={viewingProfile} onBack={() => setViewingProfile(null)} />
+        </Layout>
+      );
+    }
+
+    if (showClub && clubState) {
+      return (
+        <Layout variant="secondary">
           <ClubScreen
             clubState={clubState}
             myClubMember={result.newClubMember ?? null}
             onBack={() => setShowClub(false)}
+            onViewProfile={setViewingProfile}
           />
         </Layout>
       );
