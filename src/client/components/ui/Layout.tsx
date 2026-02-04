@@ -5,9 +5,10 @@ import { ClubBackground } from '../ClubBackground';
 interface Props extends PropsWithChildren {
   className?: string;
   variant?: 'default' | 'secondary';
+  container?: 'default' | 'fullscreen';
 }
 
-export function Layout({ children, className, variant = 'default' }: Props) {
+export function Layout({ children, className, variant = 'default', container = 'default' }: Props) {
   return (
     <div
       className={clsx(
@@ -20,7 +21,7 @@ export function Layout({ children, className, variant = 'default' }: Props) {
         <ClubBackground className="absolute inset-0 w-full h-full z-10" />
       )}
 
-      <div className="z-20">{children}</div>
+      <div className={clsx('z-20', container === 'default' && 'max-w-sm mx-auto')}>{children}</div>
     </div>
   );
 }

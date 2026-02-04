@@ -60,7 +60,7 @@ export function ClubScreen({ clubState, myClubMember, onBack, onViewProfile }: P
   }[shareStatus];
 
   return (
-    <div className="flex flex-col gap-4 max-w-lg mx-auto">
+    <div className="flex flex-col gap-4">
       <div className="text-center mb-2">
         <h1 className="text-2xl font-bold text-zinc-200">1-42-69 Club</h1>
         <p className="text-sm text-zinc-200 mt-1">Today's lucky players</p>
@@ -69,7 +69,7 @@ export function ClubScreen({ clubState, myClubMember, onBack, onViewProfile }: P
         </p>
       </div>
 
-      <div className="flex flex-col gap-4 border-2 border-black bg-zinc-700 px-2 py-4 shadow-[4px_4px_0_0]">
+      <div className="flex flex-col gap-4 border-2 border-black bg-zinc-700 p-3 shadow-[4px_4px_0_0]">
         {LUCKY_NUMBERS.map((num) => (
           <MemberDisplay
             key={num}

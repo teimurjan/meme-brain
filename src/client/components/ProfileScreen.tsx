@@ -15,7 +15,7 @@ export function ProfileScreen({ member, onBack }: Props) {
   const totalKarma = (member.linkKarma ?? 0) + (member.commentKarma ?? 0);
 
   return (
-    <div className="flex flex-col gap-4 max-w-lg mx-auto">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4">
         <img
           src={member.snoovatarUrl ?? defaultSnooGray}

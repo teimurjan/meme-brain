@@ -11,7 +11,7 @@ type Props = {
 
 export function GameScreen({ challenge, onSelect, isPlaying, selectedOptionId }: Props) {
   return (
-    <div className="flex flex-col gap-3 max-w-lg mx-auto">
+    <div className="flex flex-col gap-3">
       <MemeDisplay meme={challenge.meme} />
 
       <p className="text-sm text-center font-medium text-gray-700">

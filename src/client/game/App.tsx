@@ -29,7 +29,7 @@ function GameContent() {
 
   if (status === 'loading') {
     return (
-      <Layout className="items-center justify-center">
+      <Layout className="items-center justify-center" container="fullscreen">
         <LoadingScreen />
       </Layout>
     );
@@ -37,7 +37,7 @@ function GameContent() {
 
   if (status === 'error') {
     return (
-      <Layout className="items-center justify-center">
+      <Layout className="items-center justify-center" container="fullscreen">
         <ErrorScreen error={error} onRetry={retry} />
       </Layout>
     );
@@ -101,7 +101,7 @@ export const App = () => {
 
   if (!started) {
     return (
-      <Layout className="items-center justify-center">
+      <Layout className="items-center justify-center" container="fullscreen">
         <SplashScreen onPlay={() => setStarted(true)} />
       </Layout>
     );
