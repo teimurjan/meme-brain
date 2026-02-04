@@ -16,8 +16,8 @@ export function MemberDisplay({
   const lore = LUCKY_NUMBER_LORE[luckyNumber];
 
   return (
-    <div className="flex gap-2 items-center border-2 border-black bg-yellow-100 p-2 shadow-[4px_4px_0_0]">
-      <span className="bg-black text-yellow-200 font-semibold text-center w-10 h-10 shrink-0 flex items-center justify-center text-lg">
+    <div className="flex gap-2 items-center border-2 border-black bg-zinc-700 p-2 shadow-[4px_4px_0_0] pr-4 relative">
+      <span className="border-2 border-zinc-200 bg-orange-600 text-zinc-200 font-semibold text-center w-10 h-10 flex items-center justify-center text-base absolute -top-3 -right-3">
         #{luckyNumber}
       </span>
 
@@ -30,17 +30,17 @@ export function MemberDisplay({
       <div className="flex flex-col gap-1 min-w-0">
         <span
           className={clsx(
-            'font-semibold truncate',
-            member ? 'cursor-pointer hover:underline' : 'text-zinc-800'
+            'font-semibold truncate text-zinc-200',
+            member && 'cursor-pointer hover:underline'
           )}
           onClick={member ? () => onMemberClick(member) : undefined}
         >
           {member ? `u/${member.username}` : 'u/???'}
         </span>
 
-        <span className="text-xs text-zinc-800">
+        <span className="text-xs text-zinc-300">
           <span className="font-medium">{lore.title}:</span>{' '}
-          <span className="text-zinc-700">{lore.description}</span>
+          <span>{lore.description}</span>
         </span>
       </div>
     </div>
