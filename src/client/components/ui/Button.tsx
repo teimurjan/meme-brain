@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import type { ButtonHTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes, MouseEvent } from 'react';
+import { useClickSound } from '../../contexts/ClickSoundContext';
 
 type ButtonVariant = 'primary' | 'secondary';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -30,8 +31,16 @@ export function Button({
   selected = false,
   className,
   children,
+  onClick,
   ...props
 }: Props) {
+  const playClick = useClickSound();
+
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    playClick();
+    onClick?.(e);
+  };
+
   return (
     <button
       className={clsx(
@@ -42,6 +51,7 @@ export function Button({
         selected && 'ring-2 ring-yellow-300 outline-0',
         className
       )}
+      onClick={handleClick}
       {...props}
     >
       {children}

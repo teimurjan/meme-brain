@@ -48,7 +48,7 @@ function GameContent() {
   if (status === 'result' && result) {
     if (viewingProfile) {
       return (
-        <Layout backButton={{ onClick: () => setViewingProfile(null), label: '← Club' }}>
+        <Layout onBack={() => setViewingProfile(null)} backText={'← Club'}>
           <ProfileScreen member={viewingProfile} onBack={() => setViewingProfile(null)} />
         </Layout>
       );
@@ -56,10 +56,7 @@ function GameContent() {
 
     if (showClub && clubState) {
       return (
-        <Layout
-          variant="secondary"
-          backButton={{ onClick: () => setShowClub(false), label: '← Results' }}
-        >
+        <Layout variant="secondary" onBack={() => setShowClub(false)} backText={'← Results'}>
           <ClubScreen
             clubState={clubState}
             myClubMember={result.newClubMember ?? null}
@@ -72,14 +69,14 @@ function GameContent() {
 
     if (viewingMeme && challenge && selectedOptionId) {
       return (
-        <Layout nextButton={{ onClick: () => setViewingMeme(false), label: 'Results →' }}>
+        <Layout onBack={() => setViewingMeme(false)} backText={'Results →'}>
           <MemeReviewScreen challenge={challenge} selectedOptionId={selectedOptionId} />
         </Layout>
       );
     }
 
     return (
-      <Layout backButton={{ onClick: () => setViewingMeme(true), label: '← Meme' }}>
+      <Layout onBack={() => setViewingMeme(true)} backText={'← Meme'}>
         <ResultScreen
           optionResult={result.optionResult}
           strike={result.strike}

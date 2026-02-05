@@ -1,19 +1,14 @@
 import type { PropsWithChildren } from 'react';
 import clsx from 'clsx';
 import { ClubBackground } from '../ClubBackground';
+import { useSoundSettings } from '../../contexts/ClickSoundContext';
 
 type Props = PropsWithChildren<{
   className?: string;
   variant?: 'default' | 'secondary';
   container?: 'default' | 'fullscreen';
-  backButton?: {
-    onClick?: () => void;
-    label?: string;
-  };
-  nextButton?: {
-    onClick?: () => void;
-    label?: string;
-  };
+  onBack?: () => void;
+  backText?: string;
 }>;
 
 export function Layout({
@@ -21,44 +16,48 @@ export function Layout({
   className,
   variant = 'default',
   container = 'default',
-  backButton,
-  nextButton,
+  onBack,
+  backText = '← Back',
 }: Props) {
-  const navigationButton = backButton ?? nextButton;
-  const defaultButtonLabel = backButton ? '← Back' : 'Next →';
+  const { isMuted, toggleMute } = useSoundSettings();
+  const isFullScreen = container === 'fullscreen';
 
   return (
     <div
       className={clsx(
-        'flex flex-col min-h-screen p-4 relative',
+        'flex flex-col min-h-screen p-4 relative pt-0',
         className,
-        variant === 'secondary' ? 'bg-zinc-900' : 'bg-orange-50',
-        navigationButton && 'pt-0'
+        variant === 'secondary' ? 'bg-zinc-900' : 'bg-orange-50'
       )}
     >
       {variant === 'secondary' && (
         <ClubBackground className="absolute inset-0 w-full h-full z-10" />
       )}
 
-      <div
-        className={clsx(
-          'z-20 relative',
-          container === 'default' && 'max-w-sm mx-auto',
-          navigationButton && 'pt-8'
-        )}
-      >
-        {navigationButton && (
+      <div className={clsx('z-20 relative pt-8', !isFullScreen && 'max-w-sm mx-auto')}>
+        {!isFullScreen && backText && onBack && (
           <button
             type="button"
-            onClick={navigationButton.onClick}
+            onClick={onBack}
             className={clsx(
-              'absolute top-1 z-30 text-sm font-medium hover:underline active:scale-95',
-              variant === 'secondary' ? 'text-zinc-200' : 'text-gray-700',
-              backButton && 'left-0',
-              nextButton && 'right-0'
+              'absolute top-1 left-0 z-30 text-sm font-medium hover:underline active:scale-95',
+              variant === 'secondary' ? 'text-zinc-400' : 'text-gray-600'
             )}
           >
-            {navigationButton.label ?? defaultButtonLabel}
+            {backText}
+          </button>
+        )}
+
+        {!isFullScreen && (
+          <button
+            type="button"
+            onClick={toggleMute}
+            className={clsx(
+              'absolute top-1 right-0 z-30 text-sm font-medium hover:underline active:scale-95',
+              variant === 'secondary' ? 'text-zinc-400' : 'text-gray-600'
+            )}
+          >
+            {isMuted ? 'Unmute' : 'Mute'}
           </button>
         )}
 

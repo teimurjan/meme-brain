@@ -16,7 +16,7 @@ export function ProfileScreen({ member, onBack }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-4 p-2 shadow-[4px_4px_0_0] border-2 border-black bg-yellow-100">
+      <div className="flex items-center gap-3 p-2 shadow-[4px_4px_0_0] border-2 border-black bg-yellow-100">
         <img
           src={member.snoovatarUrl ?? defaultSnooGray}
           alt={`u/${member.username}'s snoovatar`}
