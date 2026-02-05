@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import clsx from 'clsx';
 import defaultSnooGray from '../../../assets/default-snoo-gray.png';
 import type { ClubMember, ClubState, LuckyNumber } from '../../shared/types';
@@ -12,6 +13,7 @@ export function MemberDisplay({
   clubState: ClubState;
   onMemberClick: (member: ClubMember) => void;
 }) {
+  const [isLoaded, setIsLoaded] = useState(false);
   const member = clubState.members[luckyNumber];
   const lore = LUCKY_NUMBER_LORE[luckyNumber];
 
@@ -21,11 +23,19 @@ export function MemberDisplay({
         #{luckyNumber}
       </span>
 
-      <img
-        src={member ? (member.snoovatarUrl ?? defaultSnooGray) : defaultSnooGray}
-        alt={member ? `u/${member.username}'s snoovatar` : 'Default snoo'}
-        className="h-14 w-14 object-contain shrink-0"
-      />
+      <div
+        className={clsx(
+          'h-14 w-14 shrink-0',
+          !isLoaded && 'border-2 border-zinc-400 bg-transparent'
+        )}
+      >
+        <img
+          src={member ? (member.snoovatarUrl ?? defaultSnooGray) : defaultSnooGray}
+          alt={member ? `u/${member.username}'s snoovatar` : 'Default snoo'}
+          className={clsx('h-14 w-14 object-contain', !isLoaded && 'invisible')}
+          onLoad={() => setIsLoaded(true)}
+        />
+      </div>
 
       <div className="flex flex-col gap-1 min-w-0">
         <span
@@ -35,12 +45,11 @@ export function MemberDisplay({
           )}
           onClick={member ? () => onMemberClick(member) : undefined}
         >
-          {member ? `u/${member.username}` : 'u/???'}
+          {member ? `u/${member.username} ↗` : 'u/???'}
         </span>
 
         <span className="text-xs text-zinc-300">
-          <span className="font-medium">{lore.title}:</span>{' '}
-          <span>{lore.description}</span>
+          <span className="font-medium">{lore.title}:</span> <span>{lore.description}</span>
         </span>
       </div>
     </div>

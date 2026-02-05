@@ -8,7 +8,6 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
   size?: ButtonSize;
   selected?: boolean;
-  shadow?: 'sm' | 'lg';
 };
 
 const baseStyles =
@@ -28,7 +27,6 @@ const sizeStyles: Record<ButtonSize, string> = {
 export function Button({
   variant = 'primary',
   size = 'md',
-  shadow = 'sm',
   selected = false,
   className,
   children,

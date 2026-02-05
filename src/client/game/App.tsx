@@ -9,9 +9,11 @@ import { SplashScreen } from '../components/SplashScreen';
 import { Layout } from '../components/ui/Layout';
 import { ErrorScreen } from '../components/ErrorScreen';
 import { LoadingScreen } from '../components/LoadingScreen';
+import { MemeReviewScreen } from '../components/MemeReviewScreen';
 
 function GameContent() {
   const [viewingProfile, setViewingProfile] = useState<ClubMember | null>(null);
+  const [viewingMeme, setViewingMeme] = useState(false);
   const {
     status,
     challenge,
@@ -46,7 +48,7 @@ function GameContent() {
   if (status === 'result' && result) {
     if (viewingProfile) {
       return (
-        <Layout>
+        <Layout backButton={{ onClick: () => setViewingProfile(null), label: '← Club' }}>
           <ProfileScreen member={viewingProfile} onBack={() => setViewingProfile(null)} />
         </Layout>
       );
@@ -54,7 +56,10 @@ function GameContent() {
 
     if (showClub && clubState) {
       return (
-        <Layout variant="secondary">
+        <Layout
+          variant="secondary"
+          backButton={{ onClick: () => setShowClub(false), label: '← Results' }}
+        >
           <ClubScreen
             clubState={clubState}
             myClubMember={result.newClubMember ?? null}
@@ -65,8 +70,16 @@ function GameContent() {
       );
     }
 
+    if (viewingMeme && challenge && selectedOptionId) {
+      return (
+        <Layout nextButton={{ onClick: () => setViewingMeme(false), label: 'Results →' }}>
+          <MemeReviewScreen challenge={challenge} selectedOptionId={selectedOptionId} />
+        </Layout>
+      );
+    }
+
     return (
-      <Layout>
+      <Layout backButton={{ onClick: () => setViewingMeme(true), label: '← Meme' }}>
         <ResultScreen
           optionResult={result.optionResult}
           strike={result.strike}

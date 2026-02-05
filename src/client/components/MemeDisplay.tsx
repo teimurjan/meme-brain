@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import clsx from 'clsx';
 import type { MemeSource } from '../../shared/types';
 
 type Props = {
@@ -7,6 +8,7 @@ type Props = {
 
 export function MemeDisplay({ meme }: Props) {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <>
@@ -14,13 +16,17 @@ export function MemeDisplay({ meme }: Props) {
         <button
           type="button"
           onClick={() => setIsFullscreen(true)}
-          className="relative border-2 border-black overflow-hidden shadow-[4px_4px_0_0] cursor-zoom-in"
+          className={clsx(
+            'relative border-2 border-black overflow-hidden shadow-[4px_4px_0_0] cursor-zoom-in',
+            !isLoaded && 'bg-transparent h-60 w-60'
+          )}
         >
           <img
             src={meme.imageUrl}
             alt={meme.title}
-            className="max-h-64 w-auto object-contain"
+            className={clsx('max-h-60 w-auto object-contain', !isLoaded && 'invisible')}
             loading="eager"
+            onLoad={() => setIsLoaded(true)}
           />
         </button>
       </div>

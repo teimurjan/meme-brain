@@ -42,7 +42,7 @@ export function SplashScreen({ onPlay }: Props) {
         </p>
       </div>
 
-      <Button size="lg" shadow="lg" onClick={onPlay}>
+      <Button size="lg" onClick={onPlay}>
         Play Today's Challenge
       </Button>
 
