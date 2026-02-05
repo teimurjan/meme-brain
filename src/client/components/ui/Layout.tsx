@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import clsx from 'clsx';
 import { ClubBackground } from '../ClubBackground';
-import { useSoundSettings } from '../../contexts/ClickSoundContext';
+import { useClickSound, useSoundSettings } from '../../contexts/ClickSoundContext';
 
 type Props = PropsWithChildren<{
   className?: string;
@@ -20,6 +20,7 @@ export function Layout({
   backText = '← Back',
 }: Props) {
   const { isMuted, toggleMute } = useSoundSettings();
+  const playLinkClick = useClickSound('link');
   const isFullScreen = container === 'fullscreen';
 
   return (
@@ -38,7 +39,10 @@ export function Layout({
         {!isFullScreen && backText && onBack && (
           <button
             type="button"
-            onClick={onBack}
+            onClick={() => {
+              playLinkClick();
+              onBack?.();
+            }}
             className={clsx(
               'absolute top-1 left-0 z-30 text-sm font-medium hover:underline active:scale-95',
               variant === 'secondary' ? 'text-zinc-400' : 'text-gray-600'
@@ -51,7 +55,10 @@ export function Layout({
         {!isFullScreen && (
           <button
             type="button"
-            onClick={toggleMute}
+            onClick={() => {
+              playLinkClick();
+              toggleMute();
+            }}
             className={clsx(
               'absolute top-1 right-0 z-30 text-sm font-medium hover:underline active:scale-95',
               variant === 'secondary' ? 'text-zinc-400' : 'text-gray-600'
