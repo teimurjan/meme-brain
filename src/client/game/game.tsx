@@ -2,13 +2,13 @@ import '../index.css';
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ClickSoundProvider } from '../contexts/ClickSoundContext';
+import { GameSoundProvider } from '../contexts/GameSoundContext';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ClickSoundProvider>
+    <GameSoundProvider>
       <App />
-    </ClickSoundProvider>
+    </GameSoundProvider>
   </StrictMode>
 );
