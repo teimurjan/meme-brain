@@ -9,6 +9,7 @@ import {
 } from 'react';
 import clickSrc from '../../../assets/click.ogg';
 import linkClickSrc from '../../../assets/link-click.ogg';
+import { readMuted, writeMuted } from '../utils/localStorage';
 
 const SOUND_SOURCES = {
   button: clickSrc,
@@ -28,7 +29,7 @@ const GameSoundContext = createContext<GameSoundContextValue | null>(null);
 export function GameSoundProvider({ children }: PropsWithChildren) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const buffersRef = useRef<Map<SoundType, AudioBuffer>>(new Map());
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(readMuted);
 
   useEffect(() => {
     const audioContext = new AudioContext();
@@ -71,7 +72,11 @@ export function GameSoundProvider({ children }: PropsWithChildren) {
   );
 
   const toggleMute = useCallback(() => {
-    setIsMuted((prev) => !prev);
+    setIsMuted((prev) => {
+      const next = !prev;
+      writeMuted(next);
+      return next;
+    });
   }, []);
 
   return (
