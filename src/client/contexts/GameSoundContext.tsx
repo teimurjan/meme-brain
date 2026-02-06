@@ -8,7 +8,7 @@ import {
   type PropsWithChildren,
 } from 'react';
 import clickSrc from '../../../assets/click.ogg';
-import linkClickSrc from '../../../assets/link-click.wav';
+import linkClickSrc from '../../../assets/link-click.ogg';
 
 const SOUND_SOURCES = {
   button: clickSrc,
@@ -17,15 +17,15 @@ const SOUND_SOURCES = {
 
 type SoundType = keyof typeof SOUND_SOURCES;
 
-type ClickSoundContextValue = {
+type GameSoundContextValue = {
   play: (type: SoundType) => void;
   isMuted: boolean;
   toggleMute: () => void;
 };
 
-const ClickSoundContext = createContext<ClickSoundContextValue | null>(null);
+const GameSoundContext = createContext<GameSoundContextValue | null>(null);
 
-export function ClickSoundProvider({ children }: PropsWithChildren) {
+export function GameSoundProvider({ children }: PropsWithChildren) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const buffersRef = useRef<Map<SoundType, AudioBuffer>>(new Map());
   const [isMuted, setIsMuted] = useState(false);
@@ -75,24 +75,25 @@ export function ClickSoundProvider({ children }: PropsWithChildren) {
   }, []);
 
   return (
-    <ClickSoundContext.Provider value={{ play, isMuted, toggleMute }}>
+    <GameSoundContext.Provider value={{ play, isMuted, toggleMute }}>
       {children}
-    </ClickSoundContext.Provider>
+    </GameSoundContext.Provider>
   );
 }
 
-export function useClickSound(type: SoundType = 'button') {
-  const context = useContext(ClickSoundContext);
+export function useGameSound(type: SoundType = 'button') {
+  const context = useContext(GameSoundContext);
   if (!context) {
-    throw new Error('useClickSound must be used within ClickSoundProvider');
+    throw new Error('useGameSound must be used within GameSoundProvider');
   }
-  return useCallback(() => context.play(type), [context.play, type]);
+  const { play } = context;
+  return useCallback(() => play(type), [play, type]);
 }
 
 export function useSoundSettings() {
-  const context = useContext(ClickSoundContext);
+  const context = useContext(GameSoundContext);
   if (!context) {
-    throw new Error('useSoundSettings must be used within ClickSoundProvider');
+    throw new Error('useSoundSettings must be used within GameSoundProvider');
   }
   return { isMuted: context.isMuted, toggleMute: context.toggleMute };
 }

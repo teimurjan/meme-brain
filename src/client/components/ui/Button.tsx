@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import type { ButtonHTMLAttributes, MouseEvent } from 'react';
-import { useClickSound } from '../../contexts/ClickSoundContext';
+import { useGameSound } from '../../contexts/GameSoundContext';
 
 type ButtonVariant = 'primary' | 'secondary';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -34,7 +34,7 @@ export function Button({
   onClick,
   ...props
 }: Props) {
-  const playClick = useClickSound();
+  const playClick = useGameSound();
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     playClick();

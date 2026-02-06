@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import clsx from 'clsx';
 import { ClubBackground } from '../ClubBackground';
-import { useClickSound, useSoundSettings } from '../../contexts/ClickSoundContext';
+import { useGameSound, useSoundSettings } from '../../contexts/GameSoundContext';
 
 type Props = PropsWithChildren<{
   className?: string;
@@ -20,7 +20,7 @@ export function Layout({
   backText = '← Back',
 }: Props) {
   const { isMuted, toggleMute } = useSoundSettings();
-  const playLinkClick = useClickSound('link');
+  const playLinkClick = useGameSound('link');
   const isFullScreen = container === 'fullscreen';
 
   return (

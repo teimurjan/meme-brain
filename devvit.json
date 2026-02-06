@@ -1,6 +1,6 @@
 {
   "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
-  "name": "{{DEVVIT_APP_NAME}}",
+  "name": "meme-brain",
   "permissions": {
     "reddit": {
       "asUser": ["SUBMIT_COMMENT"]
@@ -26,7 +26,7 @@
     "items": [
       {
         "label": "Create a new post",
-        "description": "{{DEVVIT_APP_NAME}}",
+        "description": "meme-brain",
         "location": "subreddit",
         "forUserType": "moderator",
         "endpoint": "/internal/menu/post-create"
@@ -37,7 +37,7 @@
     "onAppInstall": "/internal/on-app-install"
   },
   "dev": {
-    "subreddit": "{{DEVVIT_DEV_SUBREDDIT}}"
+    "subreddit": "meme_brain_dev"
   },
   "marketingAssets": {
     "icon": "assets/icon.png"
