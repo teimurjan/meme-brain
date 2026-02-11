@@ -37,7 +37,7 @@ export function ProfileScreen({ member, onBack }: Props) {
         </div>
       </div>
 
-      {member.humorProfile && <RadarChart profile={member.humorProfile} size={160} />}
+      {member.humorProfile && <RadarChart profile={member.humorProfile} size={180} />}
 
       {hasKarma && (
         <div className="grid grid-cols-3 gap-3">

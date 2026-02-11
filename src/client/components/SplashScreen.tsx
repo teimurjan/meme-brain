@@ -37,7 +37,7 @@ export function SplashScreen({ onPlay }: Props) {
 
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-3xl font-bold text-gray-900">Meme Brain</h1>
-        <p className="text-sm text-gray-600 max-w-xs">
+        <p className="text-sm text-gray-600 max-w-sm">
           Pick the funniest wrong take. Get roasted. Share your result.
         </p>
       </div>

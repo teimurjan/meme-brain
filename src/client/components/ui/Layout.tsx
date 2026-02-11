@@ -35,7 +35,7 @@ export function Layout({
         <ClubBackground className="absolute inset-0 w-full h-full z-10" />
       )}
 
-      <div className={clsx('z-20 relative pt-8 h-full', !isFullScreen && 'max-w-sm mx-auto')}>
+      <div className={clsx('z-20 relative pt-8 h-full', !isFullScreen && 'max-w-full w-sm mx-auto')}>
         {!isFullScreen && backText && onBack && (
           <button
             type="button"
