@@ -12,7 +12,7 @@ export function MemeReviewScreen({ challenge, selectedOptionId }: Props) {
     <div className="flex flex-col gap-3">
       <MemeDisplay meme={challenge.meme} />
 
-      <p className="text-sm text-center font-medium text-gray-700">Your pick:</p>
+      <p className="text-xs text-center font-medium text-gray-700">Your pick:</p>
 
       <div className="flex flex-col gap-3">
         {challenge.options.map((option) => (

@@ -14,7 +14,7 @@ export function GameScreen({ challenge, onSelect, isPlaying, selectedOptionId }:
     <div className="flex flex-col gap-3">
       <MemeDisplay meme={challenge.meme} />
 
-      <p className="text-sm text-center font-medium text-gray-700">
+      <p className="text-xs text-center font-medium text-gray-700">
         Pick the funniest explanation:
       </p>
 

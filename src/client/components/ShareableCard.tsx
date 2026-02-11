@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Button } from './ui/Button';
+import clsx from 'clsx';
 
 type Props = {
   text: string;
+  className?: string;
 };
 
 type PostStatus = 'idle' | 'posting' | 'posted' | 'error';
 
-export function ShareableCard({ text }: Props) {
+export function ShareableCard({ text, className }: Props) {
   const [status, setStatus] = useState<PostStatus>('idle');
 
   const handlePost = async () => {
@@ -44,7 +46,7 @@ export function ShareableCard({ text }: Props) {
 
   return (
     <Button
-      className="w-full"
+      className={clsx('w-full', className)}
       variant="secondary"
       onClick={handlePost}
       disabled={status === 'posting' || status === 'posted'}

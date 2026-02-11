@@ -26,7 +26,7 @@ export function Layout({
   return (
     <div
       className={clsx(
-        'flex flex-col min-h-screen p-4 relative pt-0',
+        'flex flex-col p-4 relative pt-0 h-full',
         className,
         variant === 'secondary' ? 'bg-zinc-900' : 'bg-orange-50'
       )}
@@ -35,7 +35,7 @@ export function Layout({
         <ClubBackground className="absolute inset-0 w-full h-full z-10" />
       )}
 
-      <div className={clsx('z-20 relative pt-8', !isFullScreen && 'max-w-sm mx-auto')}>
+      <div className={clsx('z-20 relative pt-8 h-full', !isFullScreen && 'max-w-sm mx-auto')}>
         {!isFullScreen && backText && onBack && (
           <button
             type="button"

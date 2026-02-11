@@ -1,6 +1,6 @@
 export function LoadingScreen() {
   return (
-    <div>
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <span className="text-sm font-semibold">Loading today's challenge...</span>
       <div
         className="w-48 mt-2"

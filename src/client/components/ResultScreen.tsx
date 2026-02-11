@@ -27,18 +27,18 @@ export function ResultScreen({
   const countdown = useNextMemeCountdown();
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 h-full">
       <div className="border-2 border-black bg-yellow-100 p-2 shadow-[4px_4px_0_0] text-center">
         <p className="text-sm text-gray-600 mb-1">You are</p>
-        <h2 className="text-xl font-bold text-black">{optionResult.label}</h2>
-        <p className="mt-2 text-sm italic text-gray-600">"{optionResult.roast}"</p>
+        <h2 className="text-lg font-bold text-black">{optionResult.label}</h2>
+        <p className="mt-2 text-xs italic text-gray-600">"{optionResult.roast}"</p>
       </div>
 
       <div className="flex justify-between items-center">
         {strike > 0 ? (
           <div className="flex items-center gap-1.5">
             <span>🔥</span>
-            <span className="text-lg font-bold">{strike}</span>
+            <span className="text-base font-bold">{strike}</span>
             <span className="text-sm text-gray-600">day streak</span>
           </div>
         ) : (
@@ -49,9 +49,9 @@ export function ResultScreen({
         </Button>
       </div>
 
-      <RadarChart profile={humorProfile} size={200} />
+      <RadarChart profile={humorProfile} size={180} />
 
-      <ShareableCard text={shareText} />
+      <ShareableCard text={shareText} className="mt-auto" />
 
       {isProduction() ? (
         <div className="text-center text-sm text-gray-500">

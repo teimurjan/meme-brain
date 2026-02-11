@@ -15,8 +15,8 @@ export function ProfileScreen({ member, onBack }: Props) {
   const totalKarma = (member.linkKarma ?? 0) + (member.commentKarma ?? 0);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-3 p-2 shadow-[4px_4px_0_0] border-2 border-black bg-yellow-100">
+    <div className="flex flex-col gap-4 h-full">
+      <div className="flex items-center gap-2 p-2 shadow-[2px_2px_0_0] border-2 border-black bg-yellow-100">
         <img
           src={member.snoovatarUrl ?? defaultSnooGray}
           alt={`u/${member.username}'s snoovatar`}
@@ -24,7 +24,7 @@ export function ProfileScreen({ member, onBack }: Props) {
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-xl font-black truncate">u/{member.username}</h1>
+            <h1 className="text-lg font-black truncate">u/{member.username}</h1>
           </div>
           {member.displayName && member.displayName !== member.username && (
             <p className="text-sm text-gray-600 font-medium mt-0.5">{member.displayName}</p>
@@ -37,20 +37,20 @@ export function ProfileScreen({ member, onBack }: Props) {
         </div>
       </div>
 
-      {member.humorProfile && <RadarChart profile={member.humorProfile} size={200} />}
+      {member.humorProfile && <RadarChart profile={member.humorProfile} size={160} />}
 
       {hasKarma && (
         <div className="grid grid-cols-3 gap-3">
-          <div className="border-2 border-black bg-orange-100 p-3 shadow-[2px_2px_0_0] text-center">
-            <p className="text-2xl font-black">{formatKarma(totalKarma)}</p>
+          <div className="border-2 border-black bg-orange-100 p-2 shadow-[2px_2px_0_0] text-center">
+            <p className="text-xl font-black">{formatKarma(totalKarma)}</p>
             <p className="text-xs text-gray-600 font-medium">total karma</p>
           </div>
-          <div className="border-2 border-black bg-blue-100 p-3 shadow-[2px_2px_0_0] text-center">
-            <p className="text-2xl font-black">{formatKarma(member.commentKarma ?? 0)}</p>
+          <div className="border-2 border-black bg-blue-100 p-2 shadow-[2px_2px_0_0] text-center">
+            <p className="text-xl font-black">{formatKarma(member.commentKarma ?? 0)}</p>
             <p className="text-xs text-gray-600 font-medium">comment</p>
           </div>
-          <div className="border-2 border-black bg-green-100 p-3 shadow-[2px_2px_0_0] text-center">
-            <p className="text-2xl font-black">
+          <div className="border-2 border-black bg-green-100 p-2 shadow-[2px_2px_0_0] text-center">
+            <p className="text-xl font-black">
               {member.accountCreatedAt ? formatAccountAge(member.accountCreatedAt) : '—'}
             </p>
             <p className="text-xs text-gray-600 font-medium">account age</p>
@@ -65,7 +65,7 @@ export function ProfileScreen({ member, onBack }: Props) {
         </div>
       )}
 
-      <Button onClick={onBack} className="w-full">
+      <Button onClick={onBack} className="w-full mt-auto">
         ← Back to Club
       </Button>
     </div>
